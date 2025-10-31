@@ -1,6 +1,9 @@
 local HELP_TEXT = "Arrow Left/Right or D-Pad: Navigate | Enter/A: Launch | ESC: Quit"
 
-io = require("io")
+
+
+
+
 
 -- Config
 local launcher = {
@@ -21,6 +24,30 @@ local launcher = {
         subtextColor = {0.7, 0.7, 0.75} 
     }
 }
+
+function LaunchGame(index)
+    local game = launcher.games[index]
+    if not (game and game.start and game.start ~= "") then
+        print("No valid path for: " .. (game and game.title or "Unknown"))
+        return
+    end
+    
+    print("Launching: " .. game.title)
+    
+    local os_type = love.system.getOS()
+    local cmd
+    
+    if os_type == "Windows" then
+        cmd = 'start "" "' .. game.start .. '"'
+    else  -- Linux, OS X
+        cmd = 'wine "' .. game.start .. '"'
+    end
+    
+    if not os.execute(cmd) then
+        print("Failed to launch game: " .. game.title)
+    end
+end
+
 
 -- JSON decode function (lightweight JSON parser)
 local function decodeJSON(jsonString)
@@ -69,8 +96,9 @@ local function loadGames()
             
             -- Add game to launcher
             table.insert(launcher.games, {
-                title = folder,  -- Use folder name as title
+                title = metadata.title,  -- Use folder name as title
                 path = folderPath,
+                start = folderPath .. "/" .. metadata.start,
                 author = metadata.author or "Unknown",
                 version = metadata.version or "N/A",
                 url = metadata.url or "",
@@ -198,8 +226,8 @@ function love.keypressed(key)
     local keyActions = {
         right = function() moveSelection(1) end,
         left = function() moveSelection(-1) end,
-        ["return"] = function() io.LaunchGame(launcher.selectedIndex) end,
-        space = function() io.LaunchGame(launcher.selectedIndex) end,
+        ["return"] = function() LaunchGame(launcher.selectedIndex) end,
+        space = function() LaunchGame(launcher.selectedIndex) end,
         escape = love.event.quit
     }
     
@@ -208,7 +236,7 @@ end
 
 function love.gamepadpressed(joystick, button)
     local buttonActions = {
-        a = function() io.LaunchGame(launcher.selectedIndex) end,
+        a = function() LaunchGame(launcher.selectedIndex) end,
         b = love.event.quit,
         dpright = function() moveSelection(1) end,
         dpleft = function() moveSelection(-1) end
