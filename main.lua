@@ -1,9 +1,8 @@
--- main.lua - Nintendo Switch-style Launcher (Simplified)
 
 local launcher = {
     games = {},
     selectedIndex = 1,
-    tileSize = 250,  -- Increased from 200 to 250
+    tileSize = 250, 
     tilePadding = 20,
     scrollOffset = 0,
     targetOffset = 0,
@@ -14,7 +13,7 @@ local launcher = {
         selectedColor = {0.4, 0.6, 0.9},
         textColor = {1, 1, 1},
         accentColor = {0.5, 0.8, 1},
-        subtextColor = {0.7, 0.7, 0.75}  -- New color for year/author
+        subtextColor = {0.7, 0.7, 0.75} 
     }
 }
 
@@ -24,7 +23,7 @@ function love.load()
     
     launcher.titleFont = love.graphics.newFont(24)
     launcher.gameFont = love.graphics.newFont(16)
-    launcher.smallFont = love.graphics.newFont(12)  -- New font for year/author
+    launcher.smallFont = love.graphics.newFont(12) 
     
     loadGames()
 end
