@@ -1,8 +1,6 @@
--- main.lua - Nintendo Switch-style Launcher for Love2D simplified horizontal scroll
+-- main.lua - Nintendo Switch-style Launcher with Smooth Scrolling
 
 local launcher = {}
-
-local UNKNOWN_ICON = "❓"
 
 function love.load()
     love.window.setTitle("GameMaker Italia Launcher")
@@ -12,6 +10,11 @@ function love.load()
     launcher.selectedIndex = 1
     launcher.tileSize = 200
     launcher.tilePadding = 20
+    
+    -- Smooth scrolling variables
+    launcher.scrollOffset = 0        -- Current scroll position
+    launcher.targetOffset = 0        -- Target scroll position
+    launcher.scrollSpeed = 8         -- Higher = faster scrolling (adjust to taste)
 
     launcher.theme = {
         background = {0.2, 0.2, 0.25},
@@ -45,6 +48,18 @@ function loadGames()
     end
 end
 
+function love.update(dt)
+    -- Smooth scrolling using linear interpolation (lerp)
+    -- The formula: current = current + (target - current) * speed * dt
+    local diff = launcher.targetOffset - launcher.scrollOffset
+    launcher.scrollOffset = launcher.scrollOffset + diff * launcher.scrollSpeed * dt
+    
+    -- Snap to target if very close (prevents infinite tiny movements)
+    if math.abs(diff) < 0.5 then
+        launcher.scrollOffset = launcher.targetOffset
+    end
+end
+
 function love.draw()
     love.graphics.clear(launcher.theme.background)
     love.graphics.setFont(launcher.titleFont)
@@ -60,14 +75,15 @@ end
 
 function drawGameGrid()
     local screenWidth, screenHeight = love.graphics.getDimensions()
-    local totalWidth = #launcher.games * (launcher.tileSize + launcher.tilePadding) - launcher.tilePadding
-    local startX = (screenWidth - totalWidth) / 2
-    local startY = (screenHeight - launcher.tileSize) / 2  -- Center vertically
+    local startY = (screenHeight - launcher.tileSize) / 2
 
     love.graphics.setFont(launcher.gameFont)
 
     for i, game in ipairs(launcher.games) do
-        local x = startX + (i - 1) * (launcher.tileSize + launcher.tilePadding)
+        -- Apply smooth scroll offset to x position
+        local x = (screenWidth / 2) - (launcher.tileSize / 2) + 
+                  (i - launcher.selectedIndex) * (launcher.tileSize + launcher.tilePadding) + 
+                  launcher.scrollOffset
         local y = startY
 
         local isSelected = (i == launcher.selectedIndex)
@@ -135,6 +151,9 @@ function moveSelection(dx)
         newIndex = 1
     end
     launcher.selectedIndex = newIndex
+    
+    -- Update target offset (this will be smoothly interpolated in love.update)
+    launcher.targetOffset = 0  -- Always scroll to center the selected tile
 end
 
 function launchGame(index)
