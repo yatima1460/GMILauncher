@@ -3,7 +3,7 @@
 local launcher = {
     games = {},
     selectedIndex = 1,
-    tileSize = 200,
+    tileSize = 250,  -- Increased from 200 to 250
     tilePadding = 20,
     scrollOffset = 0,
     targetOffset = 0,
@@ -13,7 +13,8 @@ local launcher = {
         tileColor = {0.3, 0.3, 0.35},
         selectedColor = {0.4, 0.6, 0.9},
         textColor = {1, 1, 1},
-        accentColor = {0.5, 0.8, 1}
+        accentColor = {0.5, 0.8, 1},
+        subtextColor = {0.7, 0.7, 0.75}  -- New color for year/author
     }
 }
 
@@ -23,6 +24,7 @@ function love.load()
     
     launcher.titleFont = love.graphics.newFont(24)
     launcher.gameFont = love.graphics.newFont(16)
+    launcher.smallFont = love.graphics.newFont(12)  -- New font for year/author
     
     loadGames()
 end
@@ -30,13 +32,13 @@ end
 function loadGames()
     local success, gamesData = pcall(love.filesystem.load, "games.lua")
     launcher.games = (success and gamesData) and gamesData() or {
-        { title = "Game 1", path = "path/to/game1.exe", description = "First game" },
-        { title = "Game 2", path = "path/to/game2.exe", description = "Second game" },
-        { title = "Game 3", path = "path/to/game3.exe", description = "Third game" },
-        { title = "Game 4", path = "path/to/game4.exe", description = "Fourth game" },
-        { title = "Game 5", path = "path/to/game5.exe", description = "Fifth game" },
-        { title = "Game 6", path = "path/to/game6.exe", description = "Sixth game" },
-        { title = "Game 7", path = "path/to/game7.exe", description = "Seventh game" }
+        { title = "Game 1", path = "path/to/game1.exe", description = "First game", year = "2024", author = "Author 1" },
+        { title = "Game 2", path = "path/to/game2.exe", description = "Second game", year = "2023", author = "Author 2" },
+        { title = "Game 3", path = "path/to/game3.exe", description = "Third game", year = "2025", author = "Author 3" },
+        { title = "Game 4", path = "path/to/game4.exe", description = "Fourth game", year = "2022", author = "Author 4" },
+        { title = "Game 5", path = "path/to/game5.exe", description = "Fifth game", year = "2024", author = "Author 5" },
+        { title = "Game 6", path = "path/to/game6.exe", description = "Sixth game", year = "2023", author = "Author 6" },
+        { title = "Game 7", path = "path/to/game7.exe", description = "Seventh game", year = "2025", author = "Author 7" }
     }
 end
 
@@ -99,20 +101,40 @@ function drawTile(x, y, game, isSelected)
     if game.icon then
         love.graphics.setColor(1, 1, 1)
         local scale = math.min((launcher.tileSize - 40) / game.icon:getWidth(),
-                              (launcher.tileSize - 60) / game.icon:getHeight())
+                              (launcher.tileSize - 100) / game.icon:getHeight())  -- Adjusted for more text space
         local iconX = x + (launcher.tileSize - game.icon:getWidth() * scale) / 2
         love.graphics.draw(game.icon, iconX, y + 20, 0, scale, scale)
     else
         love.graphics.setColor(0.5, 0.5, 0.55)
-        love.graphics.rectangle("fill", x + 60, y + 40, 80, 80, 5, 5)
+        love.graphics.rectangle("fill", x + 60, y + 40, 130, 90, 5, 5)  -- Slightly larger placeholder
     end
     
     -- Title with shadow
-    local titleY = y + launcher.tileSize - 30
+    local titleY = y + launcher.tileSize - 70
+    love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(0, 0, 0)
     love.graphics.printf(game.title, x + 1, titleY + 1, launcher.tileSize, "center")
     love.graphics.setColor(launcher.theme.textColor)
     love.graphics.printf(game.title, x, titleY, launcher.tileSize, "center")
+    
+    -- Year and Author
+    love.graphics.setFont(launcher.smallFont)
+    local year = game.year or "N/A"
+    local author = game.author or "Unknown"
+    
+    -- Year
+    local yearY = y + launcher.tileSize - 45
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf(year, x + 1, yearY + 1, launcher.tileSize, "center")
+    love.graphics.setColor(launcher.theme.subtextColor)
+    love.graphics.printf(year, x, yearY, launcher.tileSize, "center")
+    
+    -- Author
+    local authorY = y + launcher.tileSize - 25
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf(author, x + 1, authorY + 1, launcher.tileSize, "center")
+    love.graphics.setColor(launcher.theme.accentColor)
+    love.graphics.printf(author, x, authorY, launcher.tileSize, "center")
 end
 
 function love.keypressed(key)
