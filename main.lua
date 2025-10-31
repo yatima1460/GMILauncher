@@ -1,5 +1,11 @@
 
+local HELP_TEXT = "Arrow Left/Right or D-Pad: Navigate | Enter/A: Launch | ESC: Quit"
+
+io = require("io")
+
+-- Config
 local launcher = {
+    title = "GameMaker Italia Launcher",
     games = {},
     selectedIndex = 1,
     tileSize = 250, 
@@ -17,18 +23,7 @@ local launcher = {
     }
 }
 
-function love.load()
-    love.window.setTitle("GameMaker Italia Launcher")
-    love.window.setMode(1280, 720, {resizable = true, vsync = true})
-    
-    launcher.titleFont = love.graphics.newFont(24)
-    launcher.gameFont = love.graphics.newFont(16)
-    launcher.smallFont = love.graphics.newFont(12) 
-    
-    loadGames()
-end
-
-function loadGames()
+local function loadGames()
     local success, gamesData = pcall(love.filesystem.load, "games.lua")
     launcher.games = (success and gamesData) and gamesData() or {
         { title = "Game 1", path = "path/to/game1.exe", description = "First game", year = "2024", author = "Author 1" },
@@ -41,6 +36,16 @@ function loadGames()
     }
 end
 
+function love.load()
+    love.window.setTitle(launcher.title)
+    love.window.setMode(1280, 720, {resizable = false, vsync = true})
+    launcher.titleFont = love.graphics.newFont(24)
+    launcher.gameFont = love.graphics.newFont(16)
+    launcher.smallFont = love.graphics.newFont(12)
+    loadGames()
+end
+
+
 function love.update(dt)
     local diff = launcher.targetOffset - launcher.scrollOffset
     launcher.scrollOffset = launcher.scrollOffset + diff * launcher.scrollSpeed * dt
@@ -50,41 +55,8 @@ function love.update(dt)
     end
 end
 
-function love.draw()
-    local w, h = love.graphics.getDimensions()
-    
-    love.graphics.clear(launcher.theme.background)
-    
-    -- Header
-    love.graphics.setFont(launcher.titleFont)
-    love.graphics.setColor(launcher.theme.textColor)
-    love.graphics.print("GameMaker Italia Launcher", 40, 20)
-    
-    -- Game tiles
-    drawGameGrid(w, h)
-    
-    -- Footer
-    love.graphics.setFont(launcher.gameFont)
-    love.graphics.setColor(launcher.theme.accentColor)
-    love.graphics.print("Arrow Left/Right or D-Pad: Navigate | Enter/A: Launch | ESC: Quit", 40, h - 40)
-end
 
-function drawGameGrid(screenWidth, screenHeight)
-    local centerX = screenWidth / 2
-    local centerY = (screenHeight - launcher.tileSize) / 2
-    
-    love.graphics.setFont(launcher.gameFont)
-    
-    for i, game in ipairs(launcher.games) do
-        local x = centerX - (launcher.tileSize / 2) + 
-                  (i - launcher.selectedIndex) * (launcher.tileSize + launcher.tilePadding) + 
-                  launcher.scrollOffset
-        
-        drawTile(x, centerY, game, i == launcher.selectedIndex)
-    end
-end
-
-function drawTile(x, y, game, isSelected)
+local function drawTile(x, y, game, isSelected)
     -- Selection border
     if isSelected then
         love.graphics.setColor(launcher.theme.selectedColor)
@@ -136,17 +108,79 @@ function drawTile(x, y, game, isSelected)
     love.graphics.printf(author, x, authorY, launcher.tileSize, "center")
 end
 
+function love.draw()
+    local w, h = love.graphics.getDimensions()
+    
+    love.graphics.clear(launcher.theme.background)
+    
+    -- Header
+    love.graphics.setFont(launcher.titleFont)
+    love.graphics.setColor(launcher.theme.textColor)
+    love.graphics.print("GameMaker Italia Launcher", 40, 20)
+    
+    -- Game tiles
+    local centerX = w / 2
+    local centerY = (h - launcher.tileSize) / 2
+    love.graphics.setFont(launcher.gameFont)
+    for i, game in ipairs(launcher.games) do
+        local x = centerX - (launcher.tileSize / 2) + (i - launcher.selectedIndex) * (launcher.tileSize + launcher.tilePadding) + launcher.scrollOffset     
+        drawTile(x, centerY, game, i == launcher.selectedIndex)
+    end
+    
+    -- Footer
+    love.graphics.setFont(launcher.gameFont)
+    love.graphics.setColor(launcher.theme.accentColor)
+    love.graphics.print(HELP_TEXT, 40, h - 40)
+end
+
+local function moveSelection(direction)
+    launcher.selectedIndex = launcher.selectedIndex + direction
+    
+    if launcher.selectedIndex < 1 then
+        launcher.selectedIndex = #launcher.games
+    elseif launcher.selectedIndex > #launcher.games then
+        launcher.selectedIndex = 1
+    end
+    
+    launcher.targetOffset = 0
+end
+
 function love.keypressed(key)
     local keyActions = {
         right = function() moveSelection(1) end,
         left = function() moveSelection(-1) end,
-        ["return"] = function() launchGame(launcher.selectedIndex) end,
-        space = function() launchGame(launcher.selectedIndex) end,
+        ["return"] = function() io.LaunchGame(launcher.selectedIndex) end,
+        space = function() io.LaunchGame(launcher.selectedIndex) end,
         escape = love.event.quit
     }
     
     if keyActions[key] then keyActions[key]() end
 end
+
+
+
+
+
+-- local function launchGame(index)
+--     local game = launcher.games[index]
+--     if not (game and game.path and game.path ~= "") then
+--         print("No valid path for: " .. (game and game.title or "Unknown"))
+--         return
+--     end
+    
+--     print("Launching: " .. game.title)
+    
+--     local commands = {
+--         'start "" "' .. game.path .. '"',  -- Windows
+--         'open "' .. game.path .. '"'        -- macOS
+--     }
+    
+--     for _, cmd in ipairs(commands) do
+--         if os.execute(cmd) then return end
+--     end
+    
+--     print("Failed to launch game: " .. game.title)
+-- end
 
 function love.gamepadpressed(joystick, button)
     local buttonActions = {
@@ -159,35 +193,4 @@ function love.gamepadpressed(joystick, button)
     if buttonActions[button] then buttonActions[button]() end
 end
 
-function moveSelection(direction)
-    launcher.selectedIndex = launcher.selectedIndex + direction
-    
-    if launcher.selectedIndex < 1 then
-        launcher.selectedIndex = #launcher.games
-    elseif launcher.selectedIndex > #launcher.games then
-        launcher.selectedIndex = 1
-    end
-    
-    launcher.targetOffset = 0
-end
 
-function launchGame(index)
-    local game = launcher.games[index]
-    if not (game and game.path and game.path ~= "") then
-        print("No valid path for: " .. (game and game.title or "Unknown"))
-        return
-    end
-    
-    print("Launching: " .. game.title)
-    
-    local commands = {
-        'start "" "' .. game.path .. '"',  -- Windows
-        'open "' .. game.path .. '"'        -- macOS
-    }
-    
-    for _, cmd in ipairs(commands) do
-        if os.execute(cmd) then return end
-    end
-    
-    print("Failed to launch game: " .. game.title)
-end
