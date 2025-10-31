@@ -4,6 +4,8 @@
 
 This is a simple launcher made for the GMI community :)
 
+Inspired by Nintendo Switch-style Launcher Ninty
+
 ![](docs/image.png)
 
 ## Prerequisites
