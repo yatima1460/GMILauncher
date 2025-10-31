@@ -1,4 +1,3 @@
-
 local HELP_TEXT = "Arrow Left/Right or D-Pad: Navigate | Enter/A: Launch | ESC: Quit"
 
 io = require("io")
@@ -23,17 +22,69 @@ local launcher = {
     }
 }
 
+-- JSON decode function (lightweight JSON parser)
+local function decodeJSON(jsonString)
+    local json = {}
+    jsonString = jsonString:gsub("%s+", "")
+    
+    for key, value in jsonString:gmatch('"([^"]+)"%s*:%s*"([^"]*)"') do
+        json[key] = value
+    end
+    
+    return json
+end
+
 local function loadGames()
-    local success, gamesData = pcall(love.filesystem.load, "games.lua")
-    launcher.games = (success and gamesData) and gamesData() or {
-        { title = "Game 1", path = "path/to/game1.exe", description = "First game", year = "2024", author = "Author 1" },
-        { title = "Game 2", path = "path/to/game2.exe", description = "Second game", year = "2023", author = "Author 2" },
-        { title = "Game 3", path = "path/to/game3.exe", description = "Third game", year = "2025", author = "Author 3" },
-        { title = "Game 4", path = "path/to/game4.exe", description = "Fourth game", year = "2022", author = "Author 4" },
-        { title = "Game 5", path = "path/to/game5.exe", description = "Fifth game", year = "2024", author = "Author 5" },
-        { title = "Game 6", path = "path/to/game6.exe", description = "Sixth game", year = "2023", author = "Author 6" },
-        { title = "Game 7", path = "path/to/game7.exe", description = "Seventh game", year = "2025", author = "Author 7" }
-    }
+    launcher.games = {}
+    
+    local gamesPath = "games"
+    local gamesFolders = love.filesystem.getDirectoryItems(gamesPath)
+    
+    for _, folder in ipairs(gamesFolders) do
+        local folderPath = gamesPath .. "/" .. folder
+        
+        -- Check if it's actually a directory
+        local info = love.filesystem.getInfo(folderPath)
+        if info and info.type == "directory" then
+            local metadataPath = folderPath .. "/metadata.json"
+            local coverPath = folderPath .. "/cover.png"
+            
+            -- Try to load metadata
+            local metadata = {}
+            if love.filesystem.getInfo(metadataPath) then
+                local content = love.filesystem.read(metadataPath)
+                if content then
+                    metadata = decodeJSON(content)
+                end
+            end
+            
+            -- Try to load cover image
+            local coverImage = nil
+            if love.filesystem.getInfo(coverPath) then
+                local success, image = pcall(love.graphics.newImage, coverPath)
+                if success then
+                    coverImage = image
+                end
+            end
+            
+            -- Add game to launcher
+            table.insert(launcher.games, {
+                title = folder,  -- Use folder name as title
+                path = folderPath,
+                author = metadata.author or "Unknown",
+                version = metadata.version or "N/A",
+                url = metadata.url or "",
+                icon = coverImage
+            })
+        end
+    end
+    
+    -- Fallback if no games found
+    if #launcher.games == 0 then
+        launcher.games = {
+            { title = "No Games Found", path = "", author = "Add games to /games folder", version = "", icon = nil }
+        }
+    end
 end
 
 function love.load()
@@ -45,7 +96,6 @@ function love.load()
     loadGames()
 end
 
-
 function love.update(dt)
     local diff = launcher.targetOffset - launcher.scrollOffset
     launcher.scrollOffset = launcher.scrollOffset + diff * launcher.scrollSpeed * dt
@@ -54,7 +104,6 @@ function love.update(dt)
         launcher.scrollOffset = launcher.targetOffset
     end
 end
-
 
 local function drawTile(x, y, game, isSelected)
     -- Selection border
@@ -68,16 +117,16 @@ local function drawTile(x, y, game, isSelected)
     love.graphics.setColor(launcher.theme.tileColor)
     love.graphics.rectangle("fill", x, y, launcher.tileSize, launcher.tileSize, 10, 10)
     
-    -- Icon or placeholder
+    -- Cover image or placeholder
     if game.icon then
         love.graphics.setColor(1, 1, 1)
         local scale = math.min((launcher.tileSize - 40) / game.icon:getWidth(),
-                              (launcher.tileSize - 100) / game.icon:getHeight())  -- Adjusted for more text space
+                              (launcher.tileSize - 100) / game.icon:getHeight())
         local iconX = x + (launcher.tileSize - game.icon:getWidth() * scale) / 2
         love.graphics.draw(game.icon, iconX, y + 20, 0, scale, scale)
     else
         love.graphics.setColor(0.5, 0.5, 0.55)
-        love.graphics.rectangle("fill", x + 60, y + 40, 130, 90, 5, 5)  -- Slightly larger placeholder
+        love.graphics.rectangle("fill", x + 60, y + 40, 130, 90, 5, 5)
     end
     
     -- Title with shadow
@@ -88,17 +137,17 @@ local function drawTile(x, y, game, isSelected)
     love.graphics.setColor(launcher.theme.textColor)
     love.graphics.printf(game.title, x, titleY, launcher.tileSize, "center")
     
-    -- Year and Author
+    -- Version and Author
     love.graphics.setFont(launcher.smallFont)
-    local year = game.year or "N/A"
+    local version = game.version or "N/A"
     local author = game.author or "Unknown"
     
-    -- Year
-    local yearY = y + launcher.tileSize - 45
+    -- Version
+    local versionY = y + launcher.tileSize - 45
     love.graphics.setColor(0, 0, 0)
-    love.graphics.printf(year, x + 1, yearY + 1, launcher.tileSize, "center")
+    love.graphics.printf("v" .. version, x + 1, versionY + 1, launcher.tileSize, "center")
     love.graphics.setColor(launcher.theme.subtextColor)
-    love.graphics.printf(year, x, yearY, launcher.tileSize, "center")
+    love.graphics.printf("v" .. version, x, versionY, launcher.tileSize, "center")
     
     -- Author
     local authorY = y + launcher.tileSize - 25
@@ -157,34 +206,9 @@ function love.keypressed(key)
     if keyActions[key] then keyActions[key]() end
 end
 
-
-
-
-
--- local function launchGame(index)
---     local game = launcher.games[index]
---     if not (game and game.path and game.path ~= "") then
---         print("No valid path for: " .. (game and game.title or "Unknown"))
---         return
---     end
-    
---     print("Launching: " .. game.title)
-    
---     local commands = {
---         'start "" "' .. game.path .. '"',  -- Windows
---         'open "' .. game.path .. '"'        -- macOS
---     }
-    
---     for _, cmd in ipairs(commands) do
---         if os.execute(cmd) then return end
---     end
-    
---     print("Failed to launch game: " .. game.title)
--- end
-
 function love.gamepadpressed(joystick, button)
     local buttonActions = {
-        a = function() launchGame(launcher.selectedIndex) end,
+        a = function() io.LaunchGame(launcher.selectedIndex) end,
         b = love.event.quit,
         dpright = function() moveSelection(1) end,
         dpleft = function() moveSelection(-1) end
@@ -192,5 +216,3 @@ function love.gamepadpressed(joystick, button)
     
     if buttonActions[button] then buttonActions[button]() end
 end
-
-
