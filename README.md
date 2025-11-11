@@ -8,6 +8,13 @@ Inspired by Nintendo Switch-style Launcher Ninty
 
 ![](docs/image.png)
 
+
+## Add games
+
+1. Create folder in /games
+2. add metadata file
+3. add cover.png
+
 ## Prerequisites
 
 ### Mac
@@ -24,4 +31,11 @@ TODO
 ### Windows
 
 TODO
+
+
+## License
+
+The launcher license is in the LICENSE file
+
+Each game has its respective author's license
 
