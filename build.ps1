@@ -131,6 +131,27 @@ try {
         throw "love.exe not found at $loveExe"
     }
 
+    
+    # Set custom icon if available
+    Write-Host "Setting custom icon"
+    try {
+        Write-Host "  Setting icon using rcedit..."
+        Write-Host "    Icon file: assets/gmi_logo.ico"
+        Write-Host "    Target EXE: $loveExe"
+        $result = & "vendor/rcedit-x64.exe" $loveExe --set-icon "assets/gmi_logo.ico" 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Success "rcedit completed successfully"
+        } else {
+            Write-Host "  Warning: rcedit returned exit code $LASTEXITCODE" -ForegroundColor Yellow
+            if ($result) {
+                Write-Host "  Output: $result" -ForegroundColor Yellow
+            }
+        }
+    } catch {
+        Write-Warning "  Warning: Failed to set custom icon: $_" -ForegroundColor Yellow
+    }
+    
+
     # Concatenate love.exe and .love file
     $loveBytes = [System.IO.File]::ReadAllBytes($loveExe)
     $gameBytes = [System.IO.File]::ReadAllBytes($loveFile)
@@ -143,28 +164,13 @@ try {
 
     if (Test-Path $OutputDir) {
         Remove-Item $OutputDir -Recurse -Force
+        Write-Success "Cleared existing $OutputDir directory"
     }
     New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
     # Copy the fused executable
     Copy-Item $outputExe -Destination "$OutputDir/" -Force
 
-    # Set custom icon if available
-    Write-Step "Setting custom icon"
-    try {
-        $result = & "vendor/rcedit-x64.exe" $OutputDir/$outputExe --set-icon "assets/gmi_logo.ico" 2>&1
-        if ($LASTEXITCODE -eq 0) {
-            Write-Success "Set custom icon"
-        } else {
-            Write-Host "  Warning: rcedit returned exit code $LASTEXITCODE" -ForegroundColor Yellow
-            if ($result) {
-                Write-Host "  Output: $result" -ForegroundColor Yellow
-            }
-        }
-    } catch {
-        Write-Warning "  Warning: Failed to set custom icon: $_" -ForegroundColor Yellow
-    }
-    
 
     # Copy all necessary DLLs from LOVE2D
     Write-Host "  Copying LOVE2D DLLs..."
@@ -193,13 +199,13 @@ try {
     Write-Success "Packaged all files to $OutputDir/"
 
     # Create ZIP archive
-    # Write-Step "Creating distribution archive"
-    # $zipFile = "GMILauncher-Windows.zip"
-    # if (Test-Path $zipFile) {
-    #     Remove-Item $zipFile -Force
-    # }
-    # Compress-Archive -Path "$OutputDir/*" -DestinationPath $zipFile -Force
-    # Write-Success "Created $zipFile"
+    Write-Step "Creating distribution archive"
+    $zipFile = "GMILauncher-Windows.zip"
+    if (Test-Path $zipFile) {
+        Remove-Item $zipFile -Force
+    }
+    Compress-Archive -Path "$OutputDir/*" -DestinationPath $zipFile -Force
+    Write-Success "Created $zipFile"
 
     # Cleanup temporary files
     Write-Step "Cleaning up temporary files"
