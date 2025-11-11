@@ -1,5 +1,5 @@
 -- Import modules
-local config = require("config")
+local config = require("conf")
 local gameLoader = require("game_loader")
 local draw = require("ui.draw")
 local input = require("input")
@@ -8,8 +8,8 @@ local input = require("input")
 local launcher = config
 
 function love.load()
-    love.window.setTitle(launcher.title)
-    love.window.setMode(1280, 720, {resizable = false, vsync = true})
+    --love.window.setTitle(launcher.title)
+   
     launcher.titleFont = love.graphics.newFont(24)
     launcher.gameFont = love.graphics.newFont(16)
     launcher.smallFont = love.graphics.newFont(12)
