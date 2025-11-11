@@ -39,7 +39,7 @@ function gameLoader.loadGames(launcher)
             table.insert(launcher.games, {
                 title = metadata.title,
                 path = folderPath,
-                start = folderPath .. "/" .. metadata.start,
+                exe = folderPath .. "/" .. metadata.exe,
                 author = metadata.author or "Unknown",
                 version = metadata.version or "N/A",
                 url = metadata.url or "",
