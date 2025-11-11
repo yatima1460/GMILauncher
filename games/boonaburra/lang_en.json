@@ -1,0 +1,88 @@
+{
+  "startMenu": {
+    "press-any-key": "Press any key to start",
+    "start": "New game",
+    "continue": "Continue",
+    "settings": "Settings",
+    "leaderboard": "Leaderboard",
+    "credits": "Credits",
+    "quit": "Quit",
+    "setting-language": "Language",
+    "setting-fullscreen": "Fullscreen on/off",
+    "setting-music": "Music volume: {0}",
+    "setting-sfx": "Sound effects volume: {0}",
+    "setting-back": "Back"
+  },
+  "HUD": {
+    "coins": "Coins: {0}"
+  },
+  "pauseMenu": {
+    "title": "Pause",
+    "resume": "Resume",
+    "show-timer": "Show timer on/off",
+    "setting-fullscreen": "Fullscreen on/off",
+    "setting-music": "Music volume: {0}",
+    "setting-sfx": "Sound effects volume: {0}",
+    "back-start-menu": "Back to start menu"
+  },
+  "credits": {
+    "title": "Credits",
+    "programming": "Programming: {0}",
+    "theme-music": "Theme music: {0}",
+    "menu-music": "Menu music: {0}",
+    "ending-music": "Ending music: {0}",
+    "sfx": "Sound effects: {0}",
+    "graphics": "Graphics: {0}",
+    "tlst:": "Tilesets: {0}"
+  },
+  "powerUp": {
+    "somethingInYou": "After touching the scroll, you feel that something ~2inside you~0 has changed",
+    "somethingInTemple": "You sense that something has changed ~2inside the temple~0",
+    "walljump": "Now you can ~2wall jump~0",
+    "dash": "Now you can ~2perform a dash~0 by pressing the action button",
+    "jump": "Now you can ~2jump higher~0",
+    "launcher": "The small blue stars have now become ~2huge energy orbs"
+  },
+  "gems": {
+    "selfish": "You've collected ~2the gem of selfishness~0. Whoever possesses it is destined to look like a platypus.",
+    "selfish2": "Your movements are enhanced in water, but you can't dash outside of it",
+    "strong": "You've collected ~2the gem of strength~0. Whoever possesses it is destined to look like a rhinoceros.",
+    "strong2": "You can perform mighty dashes but only from the ground, and water is your enemy.",
+    "stubborn": "You've collected ~2the gem of stubbornness~0. Whoever possesses it is destined to look like a turtle.",
+    "stubborn2": "The weight of your shell prevents you from jumping and dashing."
+  },
+  "platypusTutorial": {
+    "diag1": "I can't remember the last time there was ~4such a foolish human~0 before me",
+    "diag2": "Are you here to make a wish, human?",
+    "diag3": "You're a man of few words, I like that",
+    "diag4": "Let me remind you of the requirements for me, Boonaburra, to grant your wish",
+    "diag5": "You must possess the gem of ~5stubbornness~0, the gem of ~6strength~0, and the gem of ~7selfishness~0. They're all located in this temple.",
+    "diag6": "Once obtained and brought before me, I can grant whatever you desire.",
+    "diag7": "But remember: the wish must be utterly ~1selfish~0",
+    "diag8": "No world peace, no resurrections. Only wishes for oneself. Wealth? Fame? What will you wish for, ~4foolish human~0?"
+  },
+  "platypus": {
+    "diag1": "Place the gems on these pedestals and then state your wish, ~4foolish human~0",
+    "diag2": "... is this truly your wish, ~4foolish human~0?",
+    "diag3": "so be it!"
+  },
+  "platypusFinale": {
+    "diag1": "...really?",
+    "diag2": "You could have had anything, and you chose to go ~2back in time~0 to die right after?",
+    "diag3": "... ~4stupid human~0",
+    "diag4": "...",
+    "diag5": "But one thing doesn't add up: what were all those little papers he insisted on retrieving?",
+    "diag6": "Are they... photographs?",
+    "diag7": "Actually no... this is love!",
+    "diag8": "You wanted to go back in time to apologize to your partner and make sure she didn't die angry?",
+    "diag9": "...",
+    "diag10": "... ~1human~0, you have defeated me. You have earned this gift."
+  },
+  "signPosts": {
+    "invisible-gem": "What is essential is invisible to the eye",
+    "do-not-trust": "Trust nothing and no one",
+    "close-street": "Street closed"
+  },
+  "enter-name": "Enter your name",
+  "thanks": "Thank you for playing!"
+}
