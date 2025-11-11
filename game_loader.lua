@@ -6,6 +6,18 @@ function gameLoader.loadGames(launcher)
     launcher.games = {}
 
     local gamesPath = "games"
+
+    -- Mount the source directory (where the .exe is located) so we can access external games folder
+    local sourceDir = love.filesystem.getSourceBaseDirectory()
+    if sourceDir and sourceDir ~= "" then
+        love.filesystem.mount(sourceDir, "external")
+        -- Try to load from external mount point first (for games outside the .exe)
+        local externalGamesPath = "external/games"
+        if love.filesystem.getInfo(externalGamesPath) then
+            gamesPath = externalGamesPath
+        end
+    end
+
     local gamesFolders = love.filesystem.getDirectoryItems(gamesPath)
 
     for _, folder in ipairs(gamesFolders) do
@@ -39,7 +51,7 @@ function gameLoader.loadGames(launcher)
             table.insert(launcher.games, {
                 title = metadata.title,
                 path = folderPath,
-                exe = folderPath .. "/" .. metadata.exe,
+                exe = metadata.exe,
                 author = metadata.author or "Unknown",
                 version = metadata.version or "N/A",
                 url = metadata.url or "",
