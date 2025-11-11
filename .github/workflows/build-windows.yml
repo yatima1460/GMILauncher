@@ -1,0 +1,123 @@
+name: Build Windows Package
+
+on:
+  push:
+    branches: [ main ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download LOVE2D for Windows
+      shell: powershell
+      run: |
+        $loveVersion = "11.5"
+        $loveUrl = "https://github.com/love2d/love/releases/download/${loveVersion}/love-${loveVersion}-win64.zip"
+        Invoke-WebRequest -Uri $loveUrl -OutFile love.zip
+        Expand-Archive -Path love.zip -DestinationPath .
+        Move-Item "love-${loveVersion}-win64" love2d
+
+    - name: Create .love file
+      shell: powershell
+      run: |
+        # Create a list of files to include (excluding .git, .github, etc.)
+        $filesToInclude = @(
+          "*.lua",
+          "games/**/*",
+          "ui/**/*",
+          "utils/**/*",
+          "vendor/**/*",
+          "docs/**/*"
+        )
+
+        # Create temporary directory for the .love file contents
+        New-Item -ItemType Directory -Force -Path "build"
+
+        # Copy files to build directory
+        Get-ChildItem -Path . -Recurse -Include *.lua | Copy-Item -Destination {Join-Path "build" $_.FullName.Substring($PWD.Path.Length + 1)} -Force -ErrorAction SilentlyContinue
+        Get-ChildItem -Path "games" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+          $dest = Join-Path "build" $_.FullName.Substring($PWD.Path.Length + 1)
+          if ($_.PSIsContainer) {
+            New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          } else {
+            $destDir = Split-Path -Parent $dest
+            if ($destDir) {
+              New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+            }
+            Copy-Item $_.FullName -Destination $dest -Force
+          }
+        }
+
+        # Copy other directories if they exist
+        $dirs = @("ui", "utils", "vendor", "docs")
+        foreach ($dir in $dirs) {
+          if (Test-Path $dir) {
+            Copy-Item -Path $dir -Destination "build/$dir" -Recurse -Force -ErrorAction SilentlyContinue
+          }
+        }
+
+        # Create .love file (which is just a ZIP with .love extension)
+        Compress-Archive -Path "build/*" -DestinationPath "GMILauncher.love" -Force
+
+    - name: Fuse .love file with LOVE2D
+      shell: powershell
+      run: |
+        # Fuse the .love file with love.exe to create standalone executable
+        $loveExe = "love2d\love.exe"
+        $loveFile = "GMILauncher.love"
+        $outputExe = "GMILauncher.exe"
+
+        # Concatenate love.exe and .love file
+        $loveBytes = [System.IO.File]::ReadAllBytes($loveExe)
+        $gameBytes = [System.IO.File]::ReadAllBytes($loveFile)
+        $combined = $loveBytes + $gameBytes
+        [System.IO.File]::WriteAllBytes($outputExe, $combined)
+
+    - name: Package Windows distribution
+      shell: powershell
+      run: |
+        # Create distribution directory
+        New-Item -ItemType Directory -Force -Path "dist"
+
+        # Copy the fused executable
+        Copy-Item "GMILauncher.exe" -Destination "dist/"
+
+        # Copy all necessary DLLs from LOVE2D
+        Copy-Item "love2d/*.dll" -Destination "dist/"
+
+        # Copy license files
+        if (Test-Path "LICENSE") {
+          Copy-Item "LICENSE" -Destination "dist/"
+        }
+        if (Test-Path "README.md") {
+          Copy-Item "README.md" -Destination "dist/"
+        }
+        if (Test-Path "love2d/license.txt") {
+          Copy-Item "love2d/license.txt" -Destination "dist/LOVE2D-LICENSE.txt"
+        }
+
+        # Create ZIP archive
+        Compress-Archive -Path "dist/*" -DestinationPath "GMILauncher-Windows.zip" -Force
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: GMILauncher-Windows
+        path: GMILauncher-Windows.zip
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: GMILauncher-Windows.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
