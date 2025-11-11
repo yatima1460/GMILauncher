@@ -78,3 +78,8 @@ Temporary Items
 *.icloud
 
 # End of https://www.toptal.com/developers/gitignore/api/lua,macos
+
+/build
+/love2d
+GMILauncher.love
+/dist

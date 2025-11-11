@@ -9,6 +9,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  LOVE_VERSION: "11.5"
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -16,103 +19,13 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Download LOVE2D for Windows
-      shell: powershell
+    - name: Build Windows package
+      shell: pwsh
       run: |
-        $loveVersion = "11.5"
-        $loveUrl = "https://github.com/love2d/love/releases/download/${loveVersion}/love-${loveVersion}-win64.zip"
-        Invoke-WebRequest -Uri $loveUrl -OutFile love.zip
-        Expand-Archive -Path love.zip -DestinationPath .
-        Move-Item "love-${loveVersion}-win64" love2d
-
-    - name: Create .love file
-      shell: powershell
-      run: |
-        # Create temporary directory for the .love file contents
-        New-Item -ItemType Directory -Force -Path "build" | Out-Null
-
-        # Function to copy with directory structure
-        function Copy-WithStructure {
-          param($Source, $Destination)
-
-          Get-ChildItem -Path $Source -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
-            $relativePath = $_.FullName.Substring($Source.Length).TrimStart('\', '/')
-            $destPath = Join-Path $Destination $relativePath
-
-            if ($_.PSIsContainer) {
-              New-Item -ItemType Directory -Force -Path $destPath -ErrorAction SilentlyContinue | Out-Null
-            } else {
-              $destDir = Split-Path -Parent $destPath
-              if ($destDir -and -not (Test-Path $destDir)) {
-                New-Item -ItemType Directory -Force -Path $destDir | Out-Null
-              }
-              Copy-Item $_.FullName -Destination $destPath -Force
-            }
-          }
-        }
-
-        # Copy all .lua files from root directory
-        Get-ChildItem -Path "." -Filter "*.lua" -File | ForEach-Object {
-          Copy-Item $_.FullName -Destination "build/$($_.Name)" -Force
-        }
-
-        # Copy directories that exist
-        $dirs = @("games", "ui", "utils", "vendor", "docs")
-        foreach ($dir in $dirs) {
-          if (Test-Path $dir) {
-            Write-Host "Copying directory: $dir"
-            $fullPath = Resolve-Path $dir
-            Copy-WithStructure -Source $fullPath -Destination (Resolve-Path "build")
-          }
-        }
-
-        # List contents of build directory for debugging
-        Write-Host "Build directory contents:"
-        Get-ChildItem -Path "build" -Recurse | ForEach-Object { Write-Host $_.FullName }
-
-        # Create .love file (which is just a ZIP with .love extension)
-        Compress-Archive -Path "build/*" -DestinationPath "GMILauncher.love" -Force
-
-    - name: Fuse .love file with LOVE2D
-      shell: powershell
-      run: |
-        # Fuse the .love file with love.exe to create standalone executable
-        $loveExe = "love2d\love.exe"
-        $loveFile = "GMILauncher.love"
-        $outputExe = "GMILauncher.exe"
-
-        # Concatenate love.exe and .love file
-        $loveBytes = [System.IO.File]::ReadAllBytes($loveExe)
-        $gameBytes = [System.IO.File]::ReadAllBytes($loveFile)
-        $combined = $loveBytes + $gameBytes
-        [System.IO.File]::WriteAllBytes($outputExe, $combined)
-
-    - name: Package Windows distribution
-      shell: powershell
-      run: |
-        # Create distribution directory
-        New-Item -ItemType Directory -Force -Path "dist"
-
-        # Copy the fused executable
-        Copy-Item "GMILauncher.exe" -Destination "dist/"
-
-        # Copy all necessary DLLs from LOVE2D
-        Copy-Item "love2d/*.dll" -Destination "dist/"
-
-        # Copy license files
-        if (Test-Path "LICENSE") {
-          Copy-Item "LICENSE" -Destination "dist/"
-        }
-        if (Test-Path "README.md") {
-          Copy-Item "README.md" -Destination "dist/"
-        }
-        if (Test-Path "love2d/license.txt") {
-          Copy-Item "love2d/license.txt" -Destination "dist/LOVE2D-LICENSE.txt"
-        }
-
-        # Create ZIP archive
-        Compress-Archive -Path "dist/*" -DestinationPath "GMILauncher-Windows.zip" -Force
+        ./build.ps1 -LoveVersion $env:LOVE_VERSION
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
