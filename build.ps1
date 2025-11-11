@@ -32,12 +32,12 @@ function Write-Step {
 
 function Write-Success {
     param([string]$Message)
-    Write-Host "  ✓ $Message" -ForegroundColor Green
+    Write-Host "  [OK] $Message" -ForegroundColor Green
 }
 
 function Write-Error-Custom {
     param([string]$Message)
-    Write-Host "  ✗ $Message" -ForegroundColor Red
+    Write-Host "  [ERROR] $Message" -ForegroundColor Red
 }
 
 # Main build process
@@ -96,7 +96,8 @@ try {
     }
 
     # Copy directories that exist (preserving structure)
-    $dirs = @("assets", "games", "ui", "utils", "vendor", "docs")
+    # Note: games folder is excluded and will be copied to dist separately
+    $dirs = @("assets", "ui", "utils", "vendor", "docs")
     foreach ($dir in $dirs) {
         if (Test-Path $dir) {
             Write-Host "  Copying directory: $dir"
@@ -109,10 +110,15 @@ try {
     # Create .love file (which is just a ZIP with .love extension)
     Write-Host "  Creating GMILauncher.love..."
     $loveFile = "GMILauncher.love"
+    $tempZip = "GMILauncher.temp.zip"
     if (Test-Path $loveFile) {
         Remove-Item $loveFile -Force
     }
-    Compress-Archive -Path "build/*" -DestinationPath $loveFile -Force
+    if (Test-Path $tempZip) {
+        Remove-Item $tempZip -Force
+    }
+    Compress-Archive -Path "build/*" -DestinationPath $tempZip -Force
+    Move-Item $tempZip $loveFile -Force
     Write-Success "Created .love file"
 
     # Fuse .love file with LOVE2D
@@ -149,6 +155,13 @@ try {
         Copy-Item $_.FullName -Destination "$OutputDir/" -Force
     }
 
+    # Copy games folder to distribution (not bundled in .exe)
+    if (Test-Path "games") {
+        Write-Host "  Copying games folder..."
+        Copy-Item -Path "games" -Destination "$OutputDir/" -Recurse -Force
+        Write-Success "Copied games folder to distribution"
+    }
+
     # Copy license files
     if (Test-Path "LICENSE") {
         Copy-Item "LICENSE" -Destination "$OutputDir/" -Force
@@ -163,13 +176,13 @@ try {
     Write-Success "Packaged all files to $OutputDir/"
 
     # Create ZIP archive
-    Write-Step "Creating distribution archive"
-    $zipFile = "GMILauncher-Windows.zip"
-    if (Test-Path $zipFile) {
-        Remove-Item $zipFile -Force
-    }
-    Compress-Archive -Path "$OutputDir/*" -DestinationPath $zipFile -Force
-    Write-Success "Created $zipFile"
+    # Write-Step "Creating distribution archive"
+    # $zipFile = "GMILauncher-Windows.zip"
+    # if (Test-Path $zipFile) {
+    #     Remove-Item $zipFile -Force
+    # }
+    # Compress-Archive -Path "$OutputDir/*" -DestinationPath $zipFile -Force
+    # Write-Success "Created $zipFile"
 
     # Cleanup temporary files
     Write-Step "Cleaning up temporary files"
@@ -180,11 +193,6 @@ try {
 
     Write-Host ""
     Write-Success "Build completed successfully!"
-    Write-Host ""
-    Write-Host "Distribution files:"
-    Write-Host "  - Directory: $OutputDir/"
-    Write-Host "  - Archive:   $zipFile"
-    Write-Host ""
     Write-Host "To test the build, run: ./$OutputDir/GMILauncher.exe" -ForegroundColor Yellow
 
 } catch {
