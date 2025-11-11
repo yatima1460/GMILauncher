@@ -83,3 +83,4 @@ Temporary Items
 /love2d
 GMILauncher.love
 /dist
+!vendor/**
