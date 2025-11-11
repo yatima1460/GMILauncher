@@ -29,41 +29,47 @@ jobs:
     - name: Create .love file
       shell: powershell
       run: |
-        # Create a list of files to include (excluding .git, .github, etc.)
-        $filesToInclude = @(
-          "*.lua",
-          "games/**/*",
-          "ui/**/*",
-          "utils/**/*",
-          "vendor/**/*",
-          "docs/**/*"
-        )
-
         # Create temporary directory for the .love file contents
-        New-Item -ItemType Directory -Force -Path "build"
+        New-Item -ItemType Directory -Force -Path "build" | Out-Null
 
-        # Copy files to build directory
-        Get-ChildItem -Path . -Recurse -Include *.lua | Copy-Item -Destination {Join-Path "build" $_.FullName.Substring($PWD.Path.Length + 1)} -Force -ErrorAction SilentlyContinue
-        Get-ChildItem -Path "games" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
-          $dest = Join-Path "build" $_.FullName.Substring($PWD.Path.Length + 1)
-          if ($_.PSIsContainer) {
-            New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          } else {
-            $destDir = Split-Path -Parent $dest
-            if ($destDir) {
-              New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+        # Function to copy with directory structure
+        function Copy-WithStructure {
+          param($Source, $Destination)
+
+          Get-ChildItem -Path $Source -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            $relativePath = $_.FullName.Substring($Source.Length).TrimStart('\', '/')
+            $destPath = Join-Path $Destination $relativePath
+
+            if ($_.PSIsContainer) {
+              New-Item -ItemType Directory -Force -Path $destPath -ErrorAction SilentlyContinue | Out-Null
+            } else {
+              $destDir = Split-Path -Parent $destPath
+              if ($destDir -and -not (Test-Path $destDir)) {
+                New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+              }
+              Copy-Item $_.FullName -Destination $destPath -Force
             }
-            Copy-Item $_.FullName -Destination $dest -Force
           }
         }
 
-        # Copy other directories if they exist
-        $dirs = @("ui", "utils", "vendor", "docs")
+        # Copy all .lua files from root directory
+        Get-ChildItem -Path "." -Filter "*.lua" -File | ForEach-Object {
+          Copy-Item $_.FullName -Destination "build/$($_.Name)" -Force
+        }
+
+        # Copy directories that exist
+        $dirs = @("games", "ui", "utils", "vendor", "docs")
         foreach ($dir in $dirs) {
           if (Test-Path $dir) {
-            Copy-Item -Path $dir -Destination "build/$dir" -Recurse -Force -ErrorAction SilentlyContinue
+            Write-Host "Copying directory: $dir"
+            $fullPath = Resolve-Path $dir
+            Copy-WithStructure -Source $fullPath -Destination (Resolve-Path "build")
           }
         }
+
+        # List contents of build directory for debugging
+        Write-Host "Build directory contents:"
+        Get-ChildItem -Path "build" -Recurse | ForEach-Object { Write-Host $_.FullName }
 
         # Create .love file (which is just a ZIP with .love extension)
         Compress-Archive -Path "build/*" -DestinationPath "GMILauncher.love" -Force
