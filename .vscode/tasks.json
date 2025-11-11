@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run LÖVE",
+            "type": "shell",
+            "osx": {
+                "command": "/Applications/love.app/Contents/MacOS/love",
+                "args": [
+                    "${workspaceFolder}"
+                ]
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
