@@ -149,6 +149,23 @@ try {
     # Copy the fused executable
     Copy-Item $outputExe -Destination "$OutputDir/" -Force
 
+    # Set custom icon if available
+    Write-Step "Setting custom icon"
+    try {
+        $result = & "vendor/rcedit-x64.exe" $OutputDir/$outputExe --set-icon "assets/gmi_logo.ico" 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Success "Set custom icon"
+        } else {
+            Write-Host "  Warning: rcedit returned exit code $LASTEXITCODE" -ForegroundColor Yellow
+            if ($result) {
+                Write-Host "  Output: $result" -ForegroundColor Yellow
+            }
+        }
+    } catch {
+        Write-Warning "  Warning: Failed to set custom icon: $_" -ForegroundColor Yellow
+    }
+    
+
     # Copy all necessary DLLs from LOVE2D
     Write-Host "  Copying LOVE2D DLLs..."
     Get-ChildItem "$loveDir/*.dll" | ForEach-Object {
