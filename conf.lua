@@ -8,7 +8,7 @@ function love.conf(t)
     t.gammacorrect = false                        -- Enable gamma-correct rendering, when supported by the system (boolean)
 
     t.window.title = "GameMaker Italia Launcher"  -- The window title (string)
-    t.window.icon = nil                           -- Filepath to an image to use as the window's icon (string)
+    t.window.icon = "assets/gmi_logo.png"                    -- Filepath to an image to use as the window's icon (string)
     t.window.width = 1280                         -- The window width (number)
     t.window.height = 720                         -- The window height (number)
     t.window.borderless = false                   -- Remove all border visuals from the window (boolean)
