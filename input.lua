@@ -19,14 +19,20 @@ local function moveSelection(launcher, direction)
     -- Offset scroll to maintain visual position, then animate back to 0
     launcher.scrollOffset = direction * tileDistance
     launcher.targetOffset = 0
+
+    -- Play navigation sound
+    if launcher.navigationSound then
+        launcher.navigationSound:stop()
+        launcher.navigationSound:play()
+    end
 end
 
 function input.handleKeypress(launcher, key)
     local keyActions = {
         right = function() moveSelection(launcher, 1) end,
         left = function() moveSelection(launcher, -1) end,
-        ["return"] = function() gameLauncher.launch(launcher.games[launcher.selectedIndex]) end,
-        space = function() gameLauncher.launch(launcher.games[launcher.selectedIndex]) end,
+        ["return"] = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
+        space = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
         s = function()
             local game = launcher.games[launcher.selectedIndex]
             if game.source then
@@ -45,7 +51,7 @@ end
 
 function input.handleGamepadPress(launcher, joystick, button)
     local buttonActions = {
-        a = function() gameLauncher.launch(launcher.games[launcher.selectedIndex]) end,
+        a = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
         b = love.event.quit,
         dpright = function() moveSelection(launcher, 1) end,
         dpleft = function() moveSelection(launcher, -1) end

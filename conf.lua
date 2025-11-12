@@ -27,7 +27,7 @@ function love.conf(t)
     t.window.x = nil
     t.window.y = nil
 
-    t.modules.audio = false
+    t.modules.audio = true
     t.modules.data = true
     t.modules.event = true
     t.modules.font = true

@@ -192,6 +192,9 @@ try {
     if (Test-Path "README.md") {
         Copy-Item "README.md" -Destination "$OutputDir/" -Force
     }
+    if (Test-Path "CREDITS.md") {
+        Copy-Item "CREDITS" -Destination "$OutputDir/" -Force
+    }
     if (Test-Path "$loveDir/license.txt") {
         Copy-Item "$loveDir/license.txt" -Destination "$OutputDir/LOVE2D-LICENSE.txt" -Force
     }

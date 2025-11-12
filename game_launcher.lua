@@ -1,9 +1,14 @@
 local gameLauncher = {}
 
-function gameLauncher.launch(game)
+function gameLauncher.launch(game, launcher)
     if not (game and game.exe and game.exe ~= "") then
         print("No valid executable for: " .. (game and game.title or "Unknown"))
         return
+    end
+
+    -- Play launch sound
+    if launcher and launcher.launchSound then
+        launcher.launchSound:play()
     end
 
     print("Launching: " .. game.title)

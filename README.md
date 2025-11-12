@@ -39,3 +39,6 @@ The launcher license is in the LICENSE file
 
 Each game has its respective author's license
 
+## Credits
+
+See [CREDITS](CREDITS.md) file for attribution details.
