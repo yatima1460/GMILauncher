@@ -1,0 +1,21 @@
+1.0.1.1 - 13/05/2020
+* link Top 100
+* fix traduzione
+* scelta lingua nella fase iniziale del gioco
+
+1.0.1.0 - 10/05/2020
+* traduzione in inglese, grazie WolfCorp
+* miglioramento dei menu, icone, pulsanti
+* miglioramento di alcuni assets
+* fix bugs vari
+
+1.0.0.2 - 30/04/2020
+* fisualizzazione bordo hud
+* cambio di puntamento alle api per la classifica online
+* creazione changelog
+
+1.0.0.1 - 28/04/2020
+* fix deathzone pad
+
+1.0.0.0 - 19/04/2020
+* rilascio GMICompe20

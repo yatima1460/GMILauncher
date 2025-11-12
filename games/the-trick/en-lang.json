@@ -1,0 +1,189 @@
+{
+	"intro": {
+		"dedica": "Dedicated to Enza \n who supported me in all this craze <3",
+		"text1": "Rome - April 19th, 2020",
+		"text6": "Help me!",
+		"text7": "There's a virus in my pc!",
+		"text8": "don't worry...",
+		"text9": "...I'll take care of that!",
+		"text10": "give me your pc",
+		"text11": "Here's the solution!",
+		"text12_1": "but what can we do?",
+		"text12_2": "we can fight!"
+	},
+	"boot": {
+		"texts0": "      +-----------------+    ",
+		"texts1": "------| MORGANA HOME PC |------",
+		"texts2": "      +-----------------+    ",
+		"texts3": "Starting the system",
+		"texts4": "* Setting up memory: %perc1%",
+		"texts5": "* Loading Primary disk: %perc2%",
+		"texts6": "* Loading drivers: %perc3%",
+		"texts7": "Operating System loaded successfully",
+		"texts8": "",
+		"texts9": "Starting load system",
+		"texts10": "* Reading data: %perc4%",
+		"texts11": "Software found: The Treat %jsonOrig%",
+		"texts12": "Threat identified: The Trick",
+		"texts13": "* Loading Hud: %perc5%",
+		"texts14": "* Loading cursor: %perc6%",
+		"texts15": "Starting software..."
+	},
+	"endgame": {
+		"texts0": "      +-----------------+    ",
+		"texts1": "------| MORGANA HOME PC |------",
+		"texts2": "      +-----------------+    ",
+		"texts3": "Starting the system",
+		"texts4": "* Setting up memory: %perc1%",
+		"texts5": "* Loading Primary disk: %perc2%",
+		"texts6": "* Loading drivers: %perc3%",
+		"texts7": "Operating System loaded successfully",
+		"texts8": "",
+		"texts9": "Booting up...",
+		"texts10": "My holiday photos! Thank you!",
+		"texts11": "THE END"
+	},
+	"buttons": {
+		"inizia": "Start!",
+		"guida": "Help",
+		"opzioni": "Config",
+		"punteggi": "Scores",
+		"crediti": "Credits",
+		"esci": "Exit",
+		"termina": "Stop",
+		"reboot": "Reboot",
+		"indietro": "Back",
+		"classificaOnline": "Internet",
+		"continua": "Continue"
+	},
+	"formHelp": {
+		"title": "The treat - help",
+		"paging": "page %{pageIndex}%/%{pageSize}%",
+		"page0_title": "Software Goal",
+		"page0_content": "Clear the viruses in all pc areas. Get as many points as you can and avoid enemy attacks.",
+		"page1_title": "Input",
+		"page1_content": "- The cursor can move in 8 directions in the scannerized area \n- The Primary attack is a laser that recharges over time. In case of overcharge the software will disable the laser for a few seconds.",
+		"page2_title": "Interaction",
+		"page2_content": "You can click on buttons and scripts to execute many actions, like gaining an ability, a powerup or interacting with the scannerized area.\nYou can only perform some actions in specific areas.",
+		"page3_title": "Secondary attack",
+		"page3_content": "By getting particular scripts, you gain a secondary attack:\n- Missile: fast countdown, fires a missile dealing area-of-effect damage.\n- Barrier: medium countdown, casts a barrier that absorbs enemy shots.",
+		"page4_title": "Power-ups",
+		"page4_content": "Some scripts give you passive powerups:\n- Hp bonus: gain one more health point\n- Laser bonus: laser lasts longer\n- Speed bonus: increased cursor speed",
+		"page5_title": "Enemy list",
+		"page5_content": "Every virus or malware can be indexed in different categories, depending on their offensive capabilities",
+		"page6_title": "SP - Basic",
+		"page6_content": "Simple and linear moviments, enemy with low health.",
+		"page7_title": "IS - Hunter",
+		"page7_content": "low health, the enemy follows the cursor continuously",
+		"page8_title": "TT - Turret",
+		"page8_content": "Doesn't move, has high health, can shot projectiles with variable targeting skill.",
+		"page9_title": "TR - Shooter",
+		"page9_content": "Uses simple movements, has high health, can shot projectiles with variable targeting skill.",
+		"page10_title": "CR - Tank",
+		"page10_content": "Slow but continuous movements, high health, it is pretty big.",
+		"page11_title": "SP - Special",
+		"page11_content": "Isolated enemies with unique abilities. You'll often need scripts or a strategy to destroy it",
+		"page12_title": "Score",
+		"page12_content": "- You gain points by destroying enemies\n- Bonus points are gained by keeping all your health intact, or by having a high accuracy.\n- Only finishing the scan will let you save your score."
+	},
+	"formConfig": {
+		"title": "The treat - Config",
+		"title_general": "General",
+		"content_fullscreen": "Full screen",
+		"content_borders": "Hud Borders",
+		"title_audio": "Audio",
+		"content_audio": "Sounds",
+		"content_music": "Music",
+		"title_controls": "Input",
+		"content_gamepad": "Enable gamepad",
+		"title_language": "Language"
+	},
+	"formPause":{
+		"title": "The treat - scan is paused"
+	},
+	"formEndGame":{
+		"title": "The Treat - scan failed"
+	},
+	"formWin":{
+		"title": "The Treat - scan completed",
+		"score_sending" : "Sending scan info...",
+		"score_failure" : "Error sending scan info",
+		"score_success" : "Operation executed successfully",
+		"score_totale": "Total"
+	},
+	"formCredits": {
+		"title": "The treat - Credits",
+		"content_date": "Date: 19 apr 2020\nfor GMICompe2020",
+		"content_title":"The trick - virus attack",
+		"content_author" : "Idea by Alessandro Falconi\nTranslated from WolfCorp",
+		"content_pixelatorapp" : "For the intro, I've used the Pixelatorapp Free license",
+		"content_music":"Music: royalty free\n- Zapsplat.com\n- Free Music Archive.org",
+		"content_ball" : "thanks to Ball for the laser audio asset"
+	},
+	"formHistory": {
+		"title": "The treat - History logs",
+		"head_pos": "#",
+		"head_name": "Name",
+		"head_score": "Score",
+		"link_highscores": "Top 100",
+		"score_load": "Loading history logs...",
+		"score_error": "History logs unavailable"
+	},
+	"formMain": {
+		"nickname": "nickname (required)",
+		"gettingStarted": "Getting Started",
+		"movimento": "movement",
+		"move_key": "movement: arrows",
+		"laser_key": "laser: D",
+		"click_key": "click: S",
+		"action_key": "action: A",
+		"pause_key": "pause: P",
+		"confirm_key": "confirm: enter",
+		"move_pad": "movement: d-pad, stick",
+		"laser_pad": "laser: A",
+		"click_pad": "click: X",
+		"action_pad": "action: B",
+		"pause_pad": "pause: select",
+		"confirm_pad": "confirm: start"
+	},
+	"dialogBoot": {
+		"dialogs_0": "What if we won't be able to recover my holiday photos?",
+		"dialogs_1": "Keep calm. I developed The Treat at the university, it revealed itself to be a great antivirus",
+		"dialogs_2": "The Treat? did you gave a name to the program you've developed?",
+		"dialogs_3": "He's my baby, my sweet kid.... He's beautiful.. look at its graphics!",
+		"dialogs_4": "But everything is green, I don't understand anything!"
+	},
+	"dialogRetry": {
+		"dialogs_0": "I'm sorry, but things have gone bad... I didn't manage to destroy The Trick in your pc",
+		"dialogs_1": "Don't give up! We can always retry again, right?",
+		"dialogs_2": "Another try, you say? Why not... Now we know our enemy better than before!",
+		"dialogs_3": "Yeah! i believe in you! <3"
+	},
+	"dialogLogin": {
+		"dialogs_0": "Here we are in the login interface. C'mon, give me your password!",
+		"dialogs_2": "Only a 4-digit password? Then don't cry at me if you have these problems"
+	},
+	"dialogLogin1": {
+		"dialogs_0": "C:\\get-password.exe> your password is: %value%"
+	},
+	"dialogDesktop": {
+		"dialogs_0": "What's this? it seemed as if... it knows what we're trying to do",
+		"dialogs_1": "Yeah, that's weird.",
+		"dialogs_2": "But did we destroy it?",
+		"dialogs_3": "Nope. It infected the browser but now the File System has been infected too.",
+		"dialogs_4": "We must continue. Are you ready?"
+	},
+	"dialogFileSystem": {
+		"dialogs_0": "I've finally found you! you are mine!",
+		"dialogs_1": "You humans are so stupid and weak behind your simple user interfaces.",
+		"dialogs_2": "It doesn't matter, you're here now, and thus I'll destroy you!",
+		"dialogs_3": "The File system is under my control, this personal computer now belongs to me."
+	},
+	"dialogEndGame": {
+		"dialogs_0": "Finally! I've destroyed The Trick!",
+		"dialogs_1": "You're my hero! Now can I have my pc back so I can download korean drama from the internet?",
+		"dialogs_2": "...",
+		"dialogs_3": "Pleeease!",
+		"dialogs_4": "First I need to save the scan's logs somewhere... just in case!"
+	}
+}

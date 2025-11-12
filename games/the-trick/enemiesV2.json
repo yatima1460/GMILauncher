@@ -1,0 +1,146 @@
+{
+  "cr-000": {
+    "name": "Matrice",
+    "id": "cr-000",
+    "type": "cr",
+    "hp": 25,
+    "vel": 1,
+    "str": 1,
+    "points": 5
+  },
+  "sp-000": {
+    "name": "Numero Binario Zero",
+    "id": "sp-000",
+    "type": "sp",
+    "hp": 3,
+    "vel": 2,
+    "str": 1,
+    "points": 2
+  },
+  "sp-001": {
+    "name": "Numero Binario Uno",
+    "id": "sp-001",
+    "type": "sp",
+    "hp": 3,
+    "vel": 2,
+    "str": 1,
+    "points": 2
+  },
+  "sp-002": {
+    "name": "Icona desktop",
+    "id": "sp-002",
+    "type": "sp",
+    "hp": 10,
+    "vel": 2,
+    "str": 1,
+    "points": 5
+  },
+  "sp-003": {
+    "name": "File corrotto",
+    "id": "sp-003",
+    "type": "sp",
+    "hp": 20,
+    "vel": 3,
+    "str": 1,
+    "points": 10
+  },
+  "is-000": {
+    "name": "Puntatore, riferimento nullo",
+    "id": "is-000",
+    "type": "is",
+    "hp": 2,
+    "vel": 1.5,
+    "str": 1,
+    "points": 2
+  },
+  "tt-000": {
+    "name": "Torretta sistema di autenticazione",
+    "id": "tt-000",
+    "type": "tt",
+    "hp": 150,
+    "vel": 0,
+    "str": 1,
+    "points": 20
+  },
+  "tt-002": {
+    "name": "Cannone rotante scorrevole",
+    "id": "tt-002",
+    "type": "tt",
+    "hp": 100,
+    "vel": 1,
+    "str": 1,
+    "points": 50
+  },
+  "tt-003": {
+    "name": "Cannone fisso",
+    "id": "tt-003",
+    "type": "tt",
+    "hp": 80,
+    "vel": 1,
+    "str": 1,
+    "points": 80
+  },
+  "tr-000": {
+    "name": "Cartella spara files",
+    "id": "tr-000",
+    "type": "tr",
+    "hp": 40,
+    "vel": 2,
+    "str": 2,
+    "points": 50
+  },
+  "sl-000": {
+    "name": "Popup spammer",
+    "id": "sl-000",
+    "type": "sl",
+    "hp": 1,
+    "vel": 0,
+    "str": 2,
+    "points": 20
+  },
+  "sl-001": {
+    "name": "Pulsante apri partizione",
+    "id": "sl-001",
+    "type": "sl",
+    "hp": 70,
+    "vel": 0,
+    "str": 1,
+    "points": 30
+  },
+  "bs-000": {
+    "name": "The trick, stato iniziale",
+    "id": "bs-000",
+    "type": "bs",
+    "hp": 300,
+    "vel": 5,
+    "str": 1,
+    "points": 100
+  },
+  "bs-001": {
+    "name": "Sistema di autenticazione",
+    "id": "bs-001",
+    "type": "bs",
+    "hp": 1000,
+    "vel": 0,
+    "points": 500,
+    "str": 10
+  },
+  "bs-002": {
+    "name": "Internet navigator 6",
+    "id": "bs-002",
+    "type": "bs",
+    "hp": 150,
+    "vel": 0,
+    "points": 500,
+    "str": 10
+  },
+  "bs-003": {
+    "name": "File System",
+    "id": "bs-003",
+    "type": "bs",
+    "hp": 1000,
+    "vel": 2,
+    "points": 1000,
+    "str": 10
+  }
+}
