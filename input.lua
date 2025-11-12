@@ -3,16 +3,18 @@ local gameLauncher = require("game_launcher")
 local input = {}
 
 local function moveSelection(launcher, direction)
+    -- Check if we would go out of bounds
+    local newIndex = launcher.selectedIndex + direction
+
+    -- Stop at boundaries instead of wrapping
+    if newIndex < 1 or newIndex > #launcher.games then
+        return -- Don't move if at boundary
+    end
+
     -- Store the distance before changing selection
     local tileDistance = launcher.tileSize + launcher.tilePadding
 
-    launcher.selectedIndex = launcher.selectedIndex + direction
-
-    if launcher.selectedIndex < 1 then
-        launcher.selectedIndex = #launcher.games
-    elseif launcher.selectedIndex > #launcher.games then
-        launcher.selectedIndex = 1
-    end
+    launcher.selectedIndex = newIndex
 
     -- Offset scroll to maintain visual position, then animate back to 0
     launcher.scrollOffset = direction * tileDistance
