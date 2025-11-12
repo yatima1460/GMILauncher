@@ -1,0 +1,189 @@
+{
+	"intro": {
+		"dedica": "Dedicato a Enza \n che mi ha sopportato in tutta questa follia <3",
+		"text1": "Roma - 19 aprile 2020",
+		"text6": "Aiutami!",
+		"text7": "il mio pc ha un virus",
+		"text8": "non ti preoccupare...",
+		"text9": "...Ci penso io!",
+		"text10": "dammi il tuo pc",
+		"text11": "ho la soluzione!",
+		"text12_1": "ma cosa possiamo fare?",
+		"text12_2": "possiamo combattere!"
+	},
+	"boot": {
+		"texts0": "      +-----------------+    ",
+		"texts1": "------| MORGANA HOME PC |------",
+		"texts2": "      +-----------------+    ",
+		"texts3": "Inizializzazione sistema in corso",
+		"texts4": "* Indicizzazione memoria: %perc1%",
+		"texts5": "* Spazio principale: %perc2%",
+		"texts6": "* Caricamento drivers: %perc3%",
+		"texts7": "Inizializzazione sistema completata",
+		"texts8": "",
+		"texts9": "Avvio sistema di load",
+		"texts10": "* Lettura dati: %perc4%",
+		"texts11": "Software trovato: The Treat %jsonOrig%",
+		"texts12": "Minaccia identificata: The Trick",
+		"texts13": "* Caricamento Hud: %perc5%",
+		"texts14": "* Caricamento Cursore: %perc6%",
+		"texts15": "Avvio in corso..."
+	},
+	"endgame": {
+		"texts0": "      +-----------------+    ",
+		"texts1": "------| MORGANA HOME PC |------",
+		"texts2": "      +-----------------+    ",
+		"texts3": "Inizializzazione sistema in corso",
+		"texts4": "* Indicizzazione memoria: %perc1%",
+		"texts5": "* Spazio principale: %perc2%",
+		"texts6": "* Caricamento drivers: %perc3%",
+		"texts7": "Sistema operativo caricato con successo",
+		"texts8": "",
+		"texts9": "Avvio in corso...",
+		"texts10": "Le mie foto delle vacanze! Grazie!",
+		"texts11": "FINE"
+	},
+	"buttons": {
+		"inizia": "Inizia!",
+		"guida": "Help",
+		"opzioni": "Config",
+		"punteggi": "Storico",
+		"esci": "Esci",
+		"termina": "Termina",
+		"crediti": "Crediti",
+		"reboot": "Reboot",
+		"indietro": "Indietro",
+		"classificaOnline": "Internet",
+		"continua": "Continua"
+	},
+	"formHelp": {
+		"title": "The treat - help",
+		"paging": "pagina %{pageIndex}%/%{pageSize}%",
+		"page0_title": "Scopo del software",
+		"page0_content": "distruggere i virus nelle varie aree del pc. Ottieni più punti possibili ed evita attacchi nemici.",
+		"page1_title": "Controlli base",
+		"page1_content": "- Il cursore si può muovere lungo 8 direzioni nell'area scannerizzata \n- L'attacco primario è un laser ricaricabile nel tempo. In caso di sovracarico del laser il software lo disabiliterà per pochi secondi.",
+		"page2_title": "Interazione",
+		"page2_content": "é possibile cliccare con il cursore su bottoni e scripts per eseguire azioni particolari, come ottenere abilità, potenziamenti o interagire con l'area.\nLe azioni eseguibili posso cambiare in base all'area del pc esaminata",
+		"page3_title": "Attacco secondario",
+		"page3_content": "Alcuni scripts permettono di ottenere attacchi secondari:\n- Missile: countdown breve, viene lanciato un missile che infligge danno ad area\n- Barrier: countdown medio, viene invocata una barriera che protegge dagli attacchi nemici",
+		"page4_title": "Potenziamenti",
+		"page4_content": "Alcuni scripts permettono di ottenere potenziamenti permanenti:\n- Bonus hp: ottiene un punto vita\n- Bonus laser: scarica laser più lunga\n- Bonus speed: velocità del cursore aumentata",
+		"page5_title": "Lista dei nemici",
+		"page5_content": "Ogni virus o malware può essere catalogato in base alle proprie capacità offensive",
+		"page6_title": "SP - Semplice",
+		"page6_content": "Movimenti semplici e lineari, bassa resistenza",
+		"page7_title": "IS - Inseguitore",
+		"page7_content": "bassa resistenza, è in grado in inseguire il cursore tramite movimenti angolati",
+		"page8_title": "TT - Torretta",
+		"page8_content": "Nessun movimento, buona resistenza, è in grado di sparare proiettili con una capacità di mira variabile",
+		"page9_title": "TR - Tiratore",
+		"page9_content": "Movimenti semplici, bassa resistenza, è in grado di sparare proiettili con una capacità di mira variabile",
+		"page10_title": "CR - Corrazzato",
+		"page10_content": "Movimenti lenti ma costanti, alta resistenza, solitamente è di notevoli dimensioni",
+		"page11_title": "SP - Speciale",
+		"page11_content": "Nemici isolati e particolari caratterizzati da movimento e attacco unici. Spesso per distruggerli è necessario trovare una strategia alternativa o interagire con l'area.",
+		"page12_title": "Punteggio",
+		"page12_content": "- Distruggendo nemici si ottengono dei punti.\n- Punti bonus è possibile ottenerli risparmiando punti vita o sulla base della precisione per categoria di nemico.\n- Solo completando la scansione sarà possibile condividere il proprio risultato.",
+	},
+	"formHistory": {
+		"title": "The treat - Storico scansioni",
+		"head_pos": "#",
+		"head_name": "Nome",
+		"head_score": "Punteggio",
+		"link_highscores": "Top 100",
+		"score_load": "Caricamento scansioni in corso...",
+		"score_error": "Impossibile leggere lo storico scansione"
+	},
+	"formPause": {
+		"title": "The treat - Scansione in pausa"
+	},
+	"formEndGame": {
+		"title": "The Treat - scansione fallita"
+	},
+	"formWin": {
+		"title": "The Treat - scansione completata",
+		"score_sending": "Invio storico in corso...",
+		"score_failure": "Errore invio storico",
+		"score_success": "Storico inviato con successo",
+		"score_totale": "Totale"
+	},
+	"formCredits": {
+		"title": "The treat - Crediti",
+		"content_date": "Data: 19 apr 2020\nPer la GMICompe2020",
+		"content_title": "The trick - virus attack",
+		"content_author": "Un idea di Alessandro Falconi\nTradotto da WolfCorp",
+		"content_pixelatorapp": "Free license Pixelatorapp per l'intro",
+		"content_music": "Musiche: royalty free\n- Zapsplat.com\n- Free Music Archive.org",
+		"content_ball": "Grazie a ball per l'asset audio del laser"
+	},
+	"formConfig": {
+		"title": "The treat - Config",
+		"title_general": "Generale",
+		"content_fullscreen": "Schermo intero",
+		"content_borders": "Bordi hud",
+		"title_audio": "Audio",
+		"title_language": "Lingua",
+		"content_audio": "Suoni",
+		"content_music": "Musica",
+		"title_controls": "Controlli",
+		"content_gamepad": "Abilita gamepad"
+	},
+	"formMain": {
+		"nickname": "nickname (obbligatorio)",
+		"gettingStarted": "Getting Started",
+		"movimento": "movimento",
+		"move_key": "movimento: frecce",
+		"laser_key": "laser: D",
+		"click_key": "click: S",
+		"action_key": "azione: A",
+		"pause_key": "pausa: P",
+		"confirm_key": "conferma: enter",
+		"move_pad": "movimento: d-pad, stick",
+		"laser_pad": "laser: A",
+		"click_pad": "click: X",
+		"action_pad": "azione: B",
+		"pause_pad": "pausa: select",
+		"confirm_pad": "conferma: start"
+	},
+	"dialogBoot": {
+		"dialogs_0": "Ho paura! E se non riuscissimo a recuperare le mie foto delle vacanze?",
+		"dialogs_1": "Stai tranquilla. Ho sviluppato The Treat ai tempi dell'università, si è rilevato un ottimo antivirus",
+		"dialogs_2": "The Treat? hai dato un nome al programma che hai sviluppato?",
+		"dialogs_3": "E' la mia creatura, la mia piccolina.... guarda quanto è bello e che grafica ha!",
+		"dialogs_4": "Ma se è tutto verde, non ci si capisce niente!"
+	},
+	"dialogRetry": {
+		"dialogs_0": "Mi dispiace, ma è andata male... Non sono riuscito a distruggere completamente The Trick",
+		"dialogs_1": "Dai, non ti arrendere! possiamo sempre riprovarci, giusto?",
+		"dialogs_2": "Un altro tentativo dici? Perchè no... in fondo ora lo conosciamo meglio!",
+		"dialogs_3": "Sono sicura che questa volta andrà meglio! <3"
+	},
+	"dialogLogin": {
+		"dialogs_0": "Siamo arrivati nella schermata di login. Dammi la tua password, presto!",
+		"dialogs_2": "Una password di sole 4 cifre? Poi non lamentarti se ti bucano il pc"
+	},
+	"dialogLogin1": {
+		"dialogs_0": "C:\\get-password.exe> la password per il login è: %value%"
+	},
+	"dialogDesktop": {
+		"dialogs_0": "Ma che cos'era? sembrava come se... stesse sapendo cosa stiamo cercando di fare",
+		"dialogs_1": "Già. E' assurdo",
+		"dialogs_2": "Ma lo abbiamo sconfitto?",
+		"dialogs_3": "Non credo. Aveva preso il controllo del browser ma oramai avrà infettato anche il file system.",
+		"dialogs_4": "Dobbiamo proseguire... tieniti pronta"
+	},
+	"dialogFileSystem": {
+		"dialogs_0": "Finalmente ti ho trovato... sei mio!",
+		"dialogs_1": "Voi umani siete così stupidi e così fragili dietro le vostre interfacce grafiche",
+		"dialogs_2": "Poco importa, ora sei qui e non mi sfuggirai, ti distruggero!",
+		"dialogs_3": "Mi sono impossessato del file system, questo pc oramai mi appartiene"
+	},
+	"dialogEndGame": {
+		"dialogs_0": "Ce l'ho fatta! ho distrutto The Trick!",
+		"dialogs_1": "Sei il mio eroe! ora posso riavere il pc e scaricare korean drama da internet?",
+		"dialogs_2": "...",
+		"dialogs_3": "E daiiiii!",
+		"dialogs_4": "Prima però fammi salvare i logs della scansione, non si sa mai"
+	}
+}
