@@ -13,7 +13,7 @@ function love.load()
     launcher.titleFont = love.graphics.newFont(24)
     launcher.gameFont = love.graphics.newFont(16)
     launcher.smallFont = love.graphics.newFont(12)
-    gameLoader.loadGames(launcher)
+    launcher.games = gameLoader.loadGames("games")
 end
 
 function love.update(dt)
