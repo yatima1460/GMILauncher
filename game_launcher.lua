@@ -47,26 +47,13 @@ function gameLauncher.launch(game)
 
     print("Executing: " .. cmd)
 
-    -- Use io.popen to capture any error output
-    local handle = io.popen(cmd .. " 2>&1")
-    if handle then
-        local result = handle:read("*a")
-        handle:close()
+    -- Use os.execute to launch without blocking
+    local success = os.execute(cmd)
 
-        if result and result ~= "" then
-            print("Output: " .. result)
-            -- Check if there's an error in the output
-            if result:match("cannot find") or result:match("error") or result:match("Error") then
-                local errorMsg = "Failed to launch game: " .. game.title .. "\n\nError: " .. result
-                love.window.showMessageBox("Launch Error", errorMsg, "error")
-            else
-                print("Game launched successfully")
-            end
-        else
-            print("Game launched successfully")
-        end
+    if success then
+        print("Game launched successfully: " .. game.title)
     else
-        local errorMsg = "Failed to execute command for: " .. game.title
+        local errorMsg = "Failed to launch game: " .. game.title
         print(errorMsg)
         love.window.showMessageBox("Launch Error", errorMsg, "error")
     end
