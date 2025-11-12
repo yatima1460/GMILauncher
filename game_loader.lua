@@ -74,7 +74,8 @@ function gameLoader.loadGames(gamesPath)
                 author = metadata.author or "Unknown",
                 version = metadata.version or "N/A",
                 url = metadata.url or "",
-                icon = coverImage
+                icon = coverImage,
+                source = metadata.source or nil
             })
             print("Loaded game: " .. (metadata.title or folder))
         end

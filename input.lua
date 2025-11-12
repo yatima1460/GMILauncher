@@ -20,6 +20,14 @@ function input.handleKeypress(launcher, key)
         left = function() moveSelection(launcher, -1) end,
         ["return"] = function() gameLauncher.launch(launcher.games[launcher.selectedIndex]) end,
         space = function() gameLauncher.launch(launcher.games[launcher.selectedIndex]) end,
+        s = function()
+            local game = launcher.games[launcher.selectedIndex]
+            if game.source then
+                love.system.openURL(game.source)
+            else
+                print("No source code URL available for: " .. game.title)
+            end
+        end,
         escape = love.event.quit
     }
 
