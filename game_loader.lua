@@ -1,9 +1,7 @@
 local gameLoader = {}
 
-function gameLoader.loadGames(launcher)
-    launcher.games = {}
-
-    local gamesPath = "games"
+function gameLoader.loadGames(gamesPath)
+    local games = {}
 
     -- Mount the source directory (where the .exe is located) so we can access external games folder
     local sourceDir = love.filesystem.getSourceBaseDirectory()
@@ -17,9 +15,12 @@ function gameLoader.loadGames(launcher)
     end
 
     local gamesFolders = love.filesystem.getDirectoryItems(gamesPath)
-
+    print("Loading games from: " .. gamesPath)
+    
     for _, folder in ipairs(gamesFolders) do
         local folderPath = gamesPath .. "/" .. folder
+
+        print("Checking folder: " .. folderPath)
 
         -- Check if it's actually a directory
         local info = love.filesystem.getInfo(folderPath)
@@ -38,10 +39,19 @@ function gameLoader.loadGames(launcher)
                         local success, result = pcall(metadataFunc)
                         if success and type(result) == "table" then
                             metadata = result
+                        else
+                            print("Failed to execute metadata file: " .. metadataPath)
                         end
+                    else
+                        print("Failed to load metadata file: " .. metadataPath)
                     end
+                else
+                    print("Failed to read metadata file: " .. metadataPath)
                 end
+            else
+                print("No metadata found for game directory, skipping: " .. folderPath)
             end
+
 
             -- Try to load cover image
             local coverImage = nil
@@ -49,28 +59,35 @@ function gameLoader.loadGames(launcher)
                 local success, image = pcall(love.graphics.newImage, coverPath)
                 if success then
                     coverImage = image
+                else 
+                    print("Failed to load cover image: " .. coverPath)
                 end
+            else
+                print("No cover image found for game: " .. (metadata.title or folder))
             end
 
             -- Add game to launcher
-            table.insert(launcher.games, {
-                title = metadata.title,
+            table.insert(games, {
+                title = metadata.title or folder,
                 path = folderPath,
-                exe = metadata.exe,
+                exe = metadata.exe or folder .. ".exe",
                 author = metadata.author or "Unknown",
                 version = metadata.version or "N/A",
                 url = metadata.url or "",
                 icon = coverImage
             })
+            print("Loaded game: " .. (metadata.title or folder))
         end
     end
 
     -- Fallback if no games found
-    if #launcher.games == 0 then
-        launcher.games = {
+    if #games == 0 then
+        games = {
             { title = "No Games Found", path = "", author = "Add games to /games folder", version = "", icon = nil }
         }
     end
+
+    return games
 end
 
 return gameLoader
