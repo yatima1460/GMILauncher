@@ -3,6 +3,9 @@ local gameLauncher = require("game_launcher")
 local input = {}
 
 local function moveSelection(launcher, direction)
+    -- Store the distance before changing selection
+    local tileDistance = launcher.tileSize + launcher.tilePadding
+
     launcher.selectedIndex = launcher.selectedIndex + direction
 
     if launcher.selectedIndex < 1 then
@@ -11,6 +14,8 @@ local function moveSelection(launcher, direction)
         launcher.selectedIndex = 1
     end
 
+    -- Offset scroll to maintain visual position, then animate back to 0
+    launcher.scrollOffset = direction * tileDistance
     launcher.targetOffset = 0
 end
 
