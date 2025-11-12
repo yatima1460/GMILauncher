@@ -50,7 +50,8 @@ end
 local config = {
     games = {},
     selectedIndex = 1,
-    tileSize = 250,
+    tileSizeWidth = 250,
+    tileSizeHeight = 275,
     tilePadding = 20,
     scrollOffset = 0,
     targetOffset = 0,

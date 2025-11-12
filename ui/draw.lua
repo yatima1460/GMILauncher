@@ -30,8 +30,8 @@ end
 local function drawTile(launcher, x, y, game, isSelected, scale, opacity)
     -- Apply transformations from center of tile
     love.graphics.push()
-    local centerX = x + launcher.tileSize / 2
-    local centerY = y + launcher.tileSize / 2
+    local centerX = x + launcher.tileSizeWidth / 2
+    local centerY = y + launcher.tileSizeHeight / 2
     love.graphics.translate(centerX, centerY)
     love.graphics.scale(scale, scale)
     love.graphics.translate(-centerX, -centerY)
@@ -43,56 +43,67 @@ local function drawTile(launcher, x, y, game, isSelected, scale, opacity)
     if isSelected then
         love.graphics.setColor(launcher.theme.selectedColor[1], launcher.theme.selectedColor[2], launcher.theme.selectedColor[3], opacity)
         love.graphics.setLineWidth(4)
-        love.graphics.rectangle("line", x - 5, y - 5 + yOffset, launcher.tileSize + 10, launcher.tileSize + 10, 10, 10)
+        love.graphics.rectangle("line", x - 5, y - 5 + yOffset, launcher.tileSizeWidth + 10, launcher.tileSizeHeight + 10, 10, 10)
     end
 
     -- Tile background
     love.graphics.setColor(launcher.theme.tileColor[1], launcher.theme.tileColor[2], launcher.theme.tileColor[3], opacity)
-    love.graphics.rectangle("fill", x, y + yOffset, launcher.tileSize, launcher.tileSize, 10, 10)
+    love.graphics.rectangle("fill", x, y + yOffset, launcher.tileSizeWidth, launcher.tileSizeHeight, 10, 10)
 
     -- Cover image or placeholder
     if game.icon then
         love.graphics.setColor(1, 1, 1, opacity)
-        local iconScale = math.min((launcher.tileSize - 40) / game.icon:getWidth(),
-                              (launcher.tileSize - 100) / game.icon:getHeight())
-        local iconX = x + (launcher.tileSize - game.icon:getWidth() * iconScale) / 2
+        local iconScale = math.min((launcher.tileSizeWidth - 40) / game.icon:getWidth(),
+                              (launcher.tileSizeHeight - 100) / game.icon:getHeight())
+        local iconX = x + (launcher.tileSizeWidth - game.icon:getWidth() * iconScale) / 2
         love.graphics.draw(game.icon, iconX, y + 20 + yOffset, 0, iconScale, iconScale)
     else
         love.graphics.setColor(0.5, 0.5, 0.55, opacity)
-        love.graphics.rectangle("fill", x + 60, y + 40 + yOffset, 130, 90, 5, 5)
+        local placeholderX = x + (launcher.tileSizeWidth - 130) / 2
+        love.graphics.rectangle("fill", placeholderX, y + 40 + yOffset, 130, 90, 5, 5)
     end
 
     -- Title with shadow
-    local titleY = y + launcher.tileSize - 70 + yOffset
+    local titleY = y + launcher.tileSizeHeight - 80 + yOffset
     love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(0, 0, 0, opacity * 0.7)
-    love.graphics.printf(game.title, x + 1, titleY + 1, launcher.tileSize, "center")
+    love.graphics.printf(game.title, x + 1, titleY + 1, launcher.tileSizeWidth, "center")
     love.graphics.setColor(launcher.theme.textColor[1], launcher.theme.textColor[2], launcher.theme.textColor[3], opacity)
-    love.graphics.printf(game.title, x, titleY, launcher.tileSize, "center")
+    love.graphics.printf(game.title, x, titleY, launcher.tileSizeWidth, "center")
 
     -- Version and Author
     love.graphics.setFont(launcher.smallFont)
-    local version = game.version or "N/A"
     local author = game.author or "Unknown"
 
-    -- Version
-    local versionY = y + launcher.tileSize - 45 + yOffset
-    love.graphics.setColor(0, 0, 0, opacity * 0.7)
-    love.graphics.printf("v" .. version, x + 1, versionY + 1, launcher.tileSize, "center")
-    love.graphics.setColor(launcher.theme.subtextColor[1], launcher.theme.subtextColor[2], launcher.theme.subtextColor[3], opacity)
-    love.graphics.printf("v" .. version, x, versionY, launcher.tileSize, "center")
+    -- Version (only if specified)
+    if game.version then
+        local versionY = y + launcher.tileSizeHeight - 65 + yOffset
+        love.graphics.setColor(0, 0, 0, opacity * 0.7)
+        love.graphics.printf("v" .. game.version, x + 1, versionY + 1, launcher.tileSizeWidth, "center")
+        love.graphics.setColor(launcher.theme.subtextColor[1], launcher.theme.subtextColor[2], launcher.theme.subtextColor[3], opacity)
+        love.graphics.printf("v" .. game.version, x, versionY, launcher.tileSizeWidth, "center")
+    end
 
-    -- Author
-    local authorY = y + launcher.tileSize - 25 + yOffset
+    -- Author (adjusted position based on whether version exists)
+    local authorY = game.version and (y + launcher.tileSizeHeight - 35 + yOffset) or (y + launcher.tileSizeHeight - 35 + yOffset)
     love.graphics.setColor(0, 0, 0, opacity * 0.7)
-    love.graphics.printf(author, x + 1, authorY + 1, launcher.tileSize, "center")
+    love.graphics.printf(author, x + 1, authorY + 1, launcher.tileSizeWidth, "center")
     love.graphics.setColor(launcher.theme.accentColor[1], launcher.theme.accentColor[2], launcher.theme.accentColor[3], opacity)
-    love.graphics.printf(author, x, authorY, launcher.tileSize, "center")
+    love.graphics.printf(author, x, authorY, launcher.tileSizeWidth, "center")
+
+    -- Year (only if specified)
+    if game.year then
+        local yearY = authorY + 18
+        love.graphics.setColor(0, 0, 0, opacity * 0.6)
+        love.graphics.printf(game.year, x + 1, yearY + 1, launcher.tileSizeWidth, "center")
+        love.graphics.setColor(launcher.theme.subtextColor[1], launcher.theme.subtextColor[2], launcher.theme.subtextColor[3], opacity * 0.8)
+        love.graphics.printf(game.year, x, yearY, launcher.tileSizeWidth, "center")
+    end
 
     -- Source code indicator
     if game.source then
         local iconSize = 30
-        local iconX = x + launcher.tileSize - iconSize - 10
+        local iconX = x + launcher.tileSizeWidth - iconSize - 10
         local iconY = y + 10 + yOffset
 
         -- Background circle
@@ -157,13 +168,13 @@ function draw.drawLauncher(launcher)
 
     -- Game tiles
     local centerX = w / 2
-    local centerY = (h - launcher.tileSize) / 2
+    local centerY = (h - launcher.tileSizeHeight) / 2
     love.graphics.setFont(launcher.gameFont)
     for i, game in ipairs(launcher.games) do
-        local x = centerX - (launcher.tileSize / 2) + (i - launcher.selectedIndex) * (launcher.tileSize + launcher.tilePadding) + launcher.scrollOffset
+        local x = centerX - (launcher.tileSizeWidth / 2) + (i - launcher.selectedIndex) * (launcher.tileSizeWidth + launcher.tilePadding) + launcher.scrollOffset
 
         -- Calculate visual distance from center (continuous, not discrete)
-        local tileDistance = launcher.tileSize + launcher.tilePadding
+        local tileDistance = launcher.tileSizeWidth + launcher.tilePadding
         local visualDistance = math.abs((i - launcher.selectedIndex) * tileDistance + launcher.scrollOffset) / tileDistance
 
         -- Scale: smoothly interpolate based on visual distance
