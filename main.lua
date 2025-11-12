@@ -4,12 +4,9 @@ local gameLoader = require("game_loader")
 local draw = require("ui.draw")
 local input = require("input")
 
--- Initialize launcher with config
 local launcher = config
 
 function love.load()
-    --love.window.setTitle(launcher.title)
-   
     launcher.titleFont = love.graphics.newFont(24)
     launcher.gameFont = love.graphics.newFont(16)
     launcher.smallFont = love.graphics.newFont(12)
