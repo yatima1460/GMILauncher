@@ -50,6 +50,22 @@ local function drawTile(launcher, x, y, game, isSelected)
     love.graphics.printf(author, x + 1, authorY + 1, launcher.tileSize, "center")
     love.graphics.setColor(launcher.theme.accentColor)
     love.graphics.printf(author, x, authorY, launcher.tileSize, "center")
+
+    -- Source code indicator
+    if game.source then
+        local iconSize = 30
+        local iconX = x + launcher.tileSize - iconSize - 10
+        local iconY = y + 10
+
+        -- Background circle
+        love.graphics.setColor(0.2, 0.2, 0.2, 0.8)
+        love.graphics.circle("fill", iconX + iconSize/2, iconY + iconSize/2, iconSize/2)
+
+        -- Code symbol "<>"
+        love.graphics.setFont(launcher.smallFont)
+        love.graphics.setColor(0.5, 0.8, 1)
+        love.graphics.printf("<>", iconX, iconY + 9, iconSize, "center")
+    end
 end
 
 function draw.drawLauncher(launcher)
