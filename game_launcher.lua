@@ -11,6 +11,15 @@ function gameLauncher.launch(game, launcher)
         launcher.launchSound:play()
     end
 
+    -- Set launching state
+    launcher.isLaunching = true
+    launcher.launchingGameTitle = game.title
+
+    -- Force screen update to show launching message
+    love.graphics.clear()
+    love.draw()
+    love.graphics.present()
+
     print("Launching: " .. game.title)
 
     local os_type = love.system.getOS()
@@ -54,6 +63,10 @@ function gameLauncher.launch(game, launcher)
 
     -- Use os.execute to launch without blocking
     local success = os.execute(cmd)
+
+    -- Clear launching state
+    launcher.isLaunching = false
+    launcher.launchingGameTitle = ""
 
     if success then
         print("Game launched successfully: " .. game.title)
