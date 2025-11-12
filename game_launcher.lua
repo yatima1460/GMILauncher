@@ -71,9 +71,10 @@ function gameLauncher.launch(game, launcher)
     if success then
         print("Game launched successfully: " .. game.title)
     else
-        local errorMsg = "Failed to launch game: " .. game.title
-        print(errorMsg)
-        love.window.showMessageBox("Launch Error", errorMsg, "error")
+        print("Failed to launch game: " .. game.title)
+        launcher.showMessageBox = true
+        launcher.messageBoxTitle = "Launch Error"
+        launcher.messageBoxText = "Failed to launch:\n" .. game.title .. "\n\nPlease check if the game executable exists."
     end
 end
 
