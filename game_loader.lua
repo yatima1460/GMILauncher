@@ -1,5 +1,3 @@
-local json = require("utils.json")
-
 local gameLoader = {}
 
 function gameLoader.loadGames(launcher)
@@ -26,7 +24,7 @@ function gameLoader.loadGames(launcher)
         -- Check if it's actually a directory
         local info = love.filesystem.getInfo(folderPath)
         if info and info.type == "directory" then
-            local metadataPath = folderPath .. "/metadata.json"
+            local metadataPath = folderPath .. "/metadata.lua"
             local coverPath = folderPath .. "/cover.png"
 
             -- Try to load metadata
@@ -34,7 +32,14 @@ function gameLoader.loadGames(launcher)
             if love.filesystem.getInfo(metadataPath) then
                 local content = love.filesystem.read(metadataPath)
                 if content then
-                    metadata = json.decode(content)
+                    -- Load the metadata as Lua code
+                    local metadataFunc = load(content)
+                    if metadataFunc then
+                        local success, result = pcall(metadataFunc)
+                        if success and type(result) == "table" then
+                            metadata = result
+                        end
+                    end
                 end
             end
 
