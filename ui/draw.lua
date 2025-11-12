@@ -119,6 +119,44 @@ local function drawTile(launcher, x, y, game, isSelected, scale, opacity)
     love.graphics.pop()
 end
 
+local function drawMessageBox(launcher)
+    local w, h = love.graphics.getDimensions()
+
+    -- Semi-transparent overlay
+    love.graphics.setColor(0, 0, 0, 0.6)
+    love.graphics.rectangle("fill", 0, 0, w, h)
+
+    -- Center message box
+    local boxWidth = 500
+    local boxHeight = 180
+    local boxX = (w - boxWidth) / 2
+    local boxY = (h - boxHeight) / 2
+
+    -- Message box background
+    love.graphics.setColor(0.25, 0.25, 0.3, 0.95)
+    love.graphics.rectangle("fill", boxX, boxY, boxWidth, boxHeight, 10, 10)
+
+    -- Border
+    love.graphics.setColor(launcher.theme.selectedColor)
+    love.graphics.setLineWidth(3)
+    love.graphics.rectangle("line", boxX, boxY, boxWidth, boxHeight, 10, 10)
+
+    -- Title
+    love.graphics.setFont(launcher.titleFont)
+    love.graphics.setColor(launcher.theme.textColor)
+    love.graphics.printf(launcher.messageBoxTitle, boxX, boxY + 20, boxWidth, "center")
+
+    -- Message text
+    love.graphics.setFont(launcher.gameFont)
+    love.graphics.setColor(launcher.theme.subtextColor)
+    love.graphics.printf(launcher.messageBoxText, boxX + 20, boxY + 70, boxWidth - 40, "center")
+
+    -- Dismiss instruction
+    love.graphics.setFont(launcher.smallFont)
+    love.graphics.setColor(launcher.theme.accentColor)
+    love.graphics.printf("Press any key or button to continue", boxX, boxY + boxHeight - 40, boxWidth, "center")
+end
+
 local function drawLaunchingScreen(launcher)
     local w, h = love.graphics.getDimensions()
 
@@ -184,6 +222,9 @@ function draw.drawLauncher(launcher)
     -- Draw animated background
     local time = love.timer.getTime()
     drawAnimatedBackground(w, h, time)
+
+    -- Check if showing message box - draw it last (on top of everything)
+    local shouldDrawMessageBox = launcher.showMessageBox
 
     -- Selected game title with Italian flag background
     local selectedGame = launcher.games[launcher.selectedIndex]
@@ -254,6 +295,11 @@ function draw.drawLauncher(launcher)
     love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(launcher.theme.accentColor)
     love.graphics.print(launcher.helpText, 40, h - 40)
+
+    -- Draw message box on top if active
+    if shouldDrawMessageBox then
+        drawMessageBox(launcher)
+    end
 end
 
 return draw

@@ -3,6 +3,11 @@ local gameLauncher = require("game_launcher")
 local input = {}
 
 local function moveSelection(launcher, direction)
+    -- Don't allow navigation if message box is showing
+    if launcher.showMessageBox then
+        return
+    end
+
     -- Check if we would go out of bounds
     local newIndex = launcher.selectedIndex + direction
 
@@ -28,6 +33,14 @@ local function moveSelection(launcher, direction)
 end
 
 function input.handleKeypress(launcher, key)
+    -- If message box is showing, dismiss it on any key press
+    if launcher.showMessageBox then
+        launcher.showMessageBox = false
+        launcher.messageBoxTitle = ""
+        launcher.messageBoxText = ""
+        return
+    end
+
     local keyActions = {
         right = function() moveSelection(launcher, 1) end,
         left = function() moveSelection(launcher, -1) end,
@@ -38,7 +51,9 @@ function input.handleKeypress(launcher, key)
             if game.source then
                 love.system.openURL(game.source)
             else
-                print("No source code URL available for: " .. game.title)
+                launcher.showMessageBox = true
+                launcher.messageBoxTitle = "Not Available"
+                launcher.messageBoxText = "No source code available for\n" .. game.title
             end
         end,
         b = function()
@@ -46,7 +61,9 @@ function input.handleKeypress(launcher, key)
             if game.url and game.url ~= "" then
                 love.system.openURL(game.url)
             else
-                print("No author URL available for: " .. game.title)
+                launcher.showMessageBox = true
+                launcher.messageBoxTitle = "Not Available"
+                launcher.messageBoxText = "No author page available for\n" .. game.title
             end
         end,
         escape = love.event.quit
@@ -58,6 +75,14 @@ function input.handleKeypress(launcher, key)
 end
 
 function input.handleGamepadPress(launcher, joystick, button)
+    -- If message box is showing, dismiss it on any button press
+    if launcher.showMessageBox then
+        launcher.showMessageBox = false
+        launcher.messageBoxTitle = ""
+        launcher.messageBoxText = ""
+        return
+    end
+
     local buttonActions = {
         a = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
         b = function()
@@ -65,7 +90,9 @@ function input.handleGamepadPress(launcher, joystick, button)
             if game.url and game.url ~= "" then
                 love.system.openURL(game.url)
             else
-                print("No author URL available for: " .. game.title)
+                launcher.showMessageBox = true
+                launcher.messageBoxTitle = "Not Available"
+                launcher.messageBoxText = "No author page available for\n" .. game.title
             end
         end,
         y = love.event.quit,
