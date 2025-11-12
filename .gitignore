@@ -84,3 +84,5 @@ Temporary Items
 GMILauncher.love
 /dist
 !vendor/**
+!games/**
+.DS_Store
