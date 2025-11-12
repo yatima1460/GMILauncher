@@ -7,13 +7,15 @@
             "osx": {
                 "command": "/Applications/love.app/Contents/MacOS/love",
                 "args": [
-                    "${workspaceFolder}"
+                    "${workspaceFolder}",
+                    "--console"
                 ]
             },
             "windows": {
                 "command": "C:\\Program Files\\LOVE\\love.exe",
                 "args": [
-                    "${workspaceFolder}"
+                    "${workspaceFolder}",
+                    "--console"
                 ]
             },
             "presentation": {
