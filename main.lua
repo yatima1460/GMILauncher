@@ -15,9 +15,13 @@ end
 
 function love.update(dt)
     local diff = launcher.targetOffset - launcher.scrollOffset
-    launcher.scrollOffset = launcher.scrollOffset + diff * launcher.scrollSpeed * dt
 
-    if math.abs(diff) < 0.5 then
+    -- Smooth interpolation with exponential decay (faster response)
+    local interpolationSpeed = 15 * dt
+    launcher.scrollOffset = launcher.scrollOffset + diff * interpolationSpeed
+
+    -- Snap to target when very close
+    if math.abs(diff) < 1 then
         launcher.scrollOffset = launcher.targetOffset
     end
 end
