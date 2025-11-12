@@ -27,6 +27,41 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "Build GMILauncher",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/build.ps1"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            }
+        },
+        {
+            "label": "Run dist GMILauncher",
+            "type": "shell",
+            "windows": {
+                "command": "${workspaceFolder}\\dist\\GMILauncher.exe",
+                "args": [
+                    "--console"
+                ]
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
         }
     ]
 }
