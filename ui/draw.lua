@@ -119,7 +119,66 @@ local function drawTile(launcher, x, y, game, isSelected, scale, opacity)
     love.graphics.pop()
 end
 
+local function drawLaunchingScreen(launcher)
+    local w, h = love.graphics.getDimensions()
+
+    -- Draw animated background
+    local time = love.timer.getTime()
+    drawAnimatedBackground(w, h, time)
+
+    -- Fullscreen overlay
+    love.graphics.setColor(0, 0, 0, 0.7)
+    love.graphics.rectangle("fill", 0, 0, w, h)
+
+    -- Center message box
+    local boxWidth = 600
+    local boxHeight = 200
+    local boxX = (w - boxWidth) / 2
+    local boxY = (h - boxHeight) / 2
+
+    -- Message box background with Italian flag
+    local stripeHeight = boxHeight / 3
+
+    -- Green stripe (top)
+    love.graphics.setColor(0, 0.55, 0.27, 0.9)
+    love.graphics.rectangle("fill", boxX, boxY, boxWidth, stripeHeight, 10, 10)
+
+    -- White stripe (middle)
+    love.graphics.setColor(1, 1, 1, 0.9)
+    love.graphics.rectangle("fill", boxX, boxY + stripeHeight, boxWidth, stripeHeight)
+
+    -- Red stripe (bottom)
+    love.graphics.setColor(0.81, 0.13, 0.15, 0.9)
+    love.graphics.rectangle("fill", boxX, boxY + stripeHeight * 2, boxWidth, stripeHeight, 10, 10)
+
+    -- Semi-transparent overlay for better text readability
+    love.graphics.setColor(0, 0, 0, 0.6)
+    love.graphics.rectangle("fill", boxX, boxY, boxWidth, boxHeight, 10, 10)
+
+    -- "Launching..." text with animation
+    love.graphics.setFont(launcher.titleFont)
+    local dots = string.rep(".", math.floor(time * 2) % 4)
+    local launchText = "Launching" .. dots
+    love.graphics.setColor(0, 0, 0, 0.8)
+    love.graphics.printf(launchText, boxX + 1, boxY + 41, boxWidth, "center")
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf(launchText, boxX, boxY + 40, boxWidth, "center")
+
+    -- Game title
+    love.graphics.setFont(launcher.gameFont)
+    love.graphics.setColor(0, 0, 0, 0.8)
+    love.graphics.printf(launcher.launchingGameTitle, boxX + 1, boxY + 101, boxWidth, "center")
+    love.graphics.setColor(launcher.theme.accentColor)
+    love.graphics.printf(launcher.launchingGameTitle, boxX, boxY + 100, boxWidth, "center")
+end
+
 function draw.drawLauncher(launcher)
+    -- Check if launching and show launching screen instead
+    if launcher.isLaunching then
+        drawLaunchingScreen(launcher)
+        return
+    end
+
     local w, h = love.graphics.getDimensions()
 
     -- Draw animated background
