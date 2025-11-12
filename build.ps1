@@ -9,17 +9,18 @@
     The version of LOVE2D to use (default: 11.5)
 .PARAMETER OutputDir
     The output directory for the built package (default: dist)
-.PARAMETER SkipDownload
-    Skip downloading LOVE2D if it already exists
+.PARAMETER ForceDownload
+    Force re-download of LOVE2D even if it already exists
 .EXAMPLE
     ./build.ps1
     ./build.ps1 -LoveVersion "11.4" -OutputDir "release"
+    ./build.ps1 -ForceDownload
 #>
 
 param(
     [string]$LoveVersion = "11.5",
     [string]$OutputDir = "dist",
-    [switch]$SkipDownload = $false
+    [switch]$ForceDownload = $false
 )
 
 $ErrorActionPreference = "Stop"
@@ -56,7 +57,12 @@ try {
     $loveDir = "love2d"
     $loveZip = "love.zip"
 
-    if (-not $SkipDownload -or -not (Test-Path $loveDir)) {
+    if ($ForceDownload -or -not (Test-Path $loveDir)) {
+        if ($ForceDownload -and (Test-Path $loveDir)) {
+            Write-Step "Force download enabled - removing existing LOVE2D"
+            Remove-Item $loveDir -Recurse -Force
+        }
+
         Write-Step "Downloading LOVE2D $LoveVersion for Windows"
 
         $loveUrl = "https://github.com/love2d/love/releases/download/$LoveVersion/love-$LoveVersion-win64.zip"
@@ -77,7 +83,7 @@ try {
         Remove-Item $loveZip -Force
         Write-Success "Extracted LOVE2D"
     } else {
-        Write-Step "Skipping LOVE2D download (already exists)"
+        Write-Step "LOVE2D already exists - skipping download (use -ForceDownload to re-download)"
     }
 
     # Create .love file
