@@ -1,5 +1,32 @@
 local draw = {}
 
+local function drawAnimatedBackground(w, h, time)
+    -- Create a flowing gradient background with animated colors
+    local segments = 20
+
+    for i = 0, segments do
+        local progress = i / segments
+
+        -- Animated color shifts using sine waves with different frequencies
+        local r = 0.15 + math.sin(time * 0.3 + progress * 2) * 0.08
+        local g = 0.15 + math.sin(time * 0.4 + progress * 3) * 0.08
+        local b = 0.2 + math.sin(time * 0.5 + progress * 1.5) * 0.1
+
+        love.graphics.setColor(r, g, b)
+        local y = (h / segments) * i
+        love.graphics.rectangle("fill", 0, y, w, h / segments + 1)
+    end
+
+    -- Add subtle moving diagonal stripes for depth
+    love.graphics.setLineWidth(2)
+    for i = 0, 30 do
+        local offset = (time * 20 + i * 40) % (w + h)
+        local alpha = 0.03 + math.sin(time + i * 0.5) * 0.02
+        love.graphics.setColor(1, 1, 1, alpha)
+        love.graphics.line(offset - h, 0, offset, h)
+    end
+end
+
 local function drawTile(launcher, x, y, game, isSelected, scale, opacity)
     -- Apply transformations from center of tile
     love.graphics.push()
@@ -84,12 +111,49 @@ end
 function draw.drawLauncher(launcher)
     local w, h = love.graphics.getDimensions()
 
-    love.graphics.clear(launcher.theme.background)
+    -- Draw animated background
+    local time = love.timer.getTime()
+    drawAnimatedBackground(w, h, time)
 
-    -- Header
-    love.graphics.setFont(launcher.titleFont)
-    love.graphics.setColor(launcher.theme.textColor)
-    love.graphics.print("GameMaker Italia Launcher", 40, 20)
+    -- Selected game title with Italian flag background
+    local selectedGame = launcher.games[launcher.selectedIndex]
+    if selectedGame then
+        love.graphics.setFont(launcher.titleFont)
+
+        -- Measure text width for background sizing
+        local titleWidth = launcher.titleFont:getWidth(selectedGame.title)
+        local titleHeight = launcher.titleFont:getHeight()
+        local padding = 20
+        local bgWidth = titleWidth + padding * 2
+        local bgHeight = titleHeight + padding * 2
+        local bgX = (w - bgWidth) / 2
+        local bgY = 20
+
+        -- Italian flag background (green, white, red vertical stripes)
+        local stripeWidth = bgWidth / 3
+
+        -- Green stripe
+        love.graphics.setColor(0, 0.55, 0.27)
+        love.graphics.rectangle("fill", bgX, bgY, stripeWidth, bgHeight, 5, 5)
+
+        -- White stripe
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.rectangle("fill", bgX + stripeWidth, bgY, stripeWidth, bgHeight)
+
+        -- Red stripe
+        love.graphics.setColor(0.81, 0.13, 0.15)
+        love.graphics.rectangle("fill", bgX + stripeWidth * 2, bgY, stripeWidth, bgHeight, 5, 5)
+
+        -- Semi-transparent overlay for better text readability
+        love.graphics.setColor(0, 0, 0, 0.4)
+        love.graphics.rectangle("fill", bgX, bgY, bgWidth, bgHeight, 5, 5)
+
+        -- Game title text with shadow
+        love.graphics.setColor(0, 0, 0, 0.8)
+        love.graphics.printf(selectedGame.title, bgX + 1, bgY + padding + 1, bgWidth, "center")
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.printf(selectedGame.title, bgX, bgY + padding, bgWidth, "center")
+    end
 
     -- Game tiles
     local centerX = w / 2
