@@ -72,10 +72,11 @@ function gameLoader.loadGames(gamesPath)
                 path = folderPath,
                 exe = metadata.exe or folder .. ".exe",
                 author = metadata.author or "Unknown",
-                version = metadata.version or "N/A",
+                version = metadata.version or nil,
                 url = metadata.url or "",
                 icon = coverImage,
-                source = metadata.source or nil
+                source = metadata.source or nil,
+                year = metadata.year or nil
             })
             print("Loaded game: " .. (metadata.title or folder))
         end

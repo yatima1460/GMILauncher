@@ -12,7 +12,7 @@ local function moveSelection(launcher, direction)
     end
 
     -- Store the distance before changing selection
-    local tileDistance = launcher.tileSize + launcher.tilePadding
+    local tileDistance = launcher.tileSizeWidth + launcher.tilePadding
 
     launcher.selectedIndex = newIndex
 

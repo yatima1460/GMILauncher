@@ -1,7 +1,8 @@
 return {
     title = "Boonaburra",
-    version = "1.1.5",
     author = "Scario",
     url = "https://scario88.itch.io/boonaburra",
-    exe = "Boonaburra.exe"
+    exe = "Boonaburra.exe",
+    year = "2024",
+    version = "1.1.5",
 }
