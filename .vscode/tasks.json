@@ -10,6 +10,12 @@
                     "${workspaceFolder}"
                 ]
             },
+            "windows": {
+                "command": "C:\\Program Files\\LOVE\\love.exe",
+                "args": [
+                    "${workspaceFolder}"
+                ]
+            },
             "presentation": {
                 "reveal": "always",
                 "panel": "new"
