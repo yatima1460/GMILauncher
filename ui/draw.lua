@@ -226,45 +226,43 @@ function draw.drawLauncher(launcher)
     -- Check if showing message box - draw it last (on top of everything)
     local shouldDrawMessageBox = launcher.showMessageBox
 
-    -- Selected game title with Italian flag background
-    local selectedGame = launcher.games[launcher.selectedIndex]
-    if selectedGame then
-        love.graphics.setFont(launcher.titleFont)
+    -- Launcher title with Italian flag background at top
+    love.graphics.setFont(launcher.titleFont)
+    local launcherTitle = "GameMaker Italia Launcher"
 
-        -- Measure text width for background sizing
-        local titleWidth = launcher.titleFont:getWidth(selectedGame.title)
-        local titleHeight = launcher.titleFont:getHeight()
-        local padding = 20
-        local bgWidth = titleWidth + padding * 2
-        local bgHeight = titleHeight + padding * 2
-        local bgX = (w - bgWidth) / 2
-        local bgY = 20
+    -- Measure text width for background sizing
+    local titleWidth = launcher.titleFont:getWidth(launcherTitle)
+    local titleHeight = launcher.titleFont:getHeight()
+    local padding = 20
+    local bgWidth = titleWidth + padding * 2
+    local bgHeight = titleHeight + padding * 2
+    local bgX = (w - bgWidth) / 2
+    local bgY = 20
 
-        -- Italian flag background (green, white, red vertical stripes)
-        local stripeWidth = bgWidth / 3
+    -- Italian flag background (green, white, red vertical stripes)
+    local stripeWidth = bgWidth / 3
 
-        -- Green stripe
-        love.graphics.setColor(0, 0.55, 0.27)
-        love.graphics.rectangle("fill", bgX, bgY, stripeWidth, bgHeight, 5, 5)
+    -- Green stripe
+    love.graphics.setColor(0, 0.55, 0.27)
+    love.graphics.rectangle("fill", bgX, bgY, stripeWidth, bgHeight, 5, 5)
 
-        -- White stripe
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.rectangle("fill", bgX + stripeWidth, bgY, stripeWidth, bgHeight)
+    -- White stripe
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.rectangle("fill", bgX + stripeWidth, bgY, stripeWidth, bgHeight)
 
-        -- Red stripe
-        love.graphics.setColor(0.81, 0.13, 0.15)
-        love.graphics.rectangle("fill", bgX + stripeWidth * 2, bgY, stripeWidth, bgHeight, 5, 5)
+    -- Red stripe
+    love.graphics.setColor(0.81, 0.13, 0.15)
+    love.graphics.rectangle("fill", bgX + stripeWidth * 2, bgY, stripeWidth, bgHeight, 5, 5)
 
-        -- Semi-transparent overlay for better text readability
-        love.graphics.setColor(0, 0, 0, 0.4)
-        love.graphics.rectangle("fill", bgX, bgY, bgWidth, bgHeight, 5, 5)
+    -- Semi-transparent overlay for better text readability
+    love.graphics.setColor(0, 0, 0, 0.4)
+    love.graphics.rectangle("fill", bgX, bgY, bgWidth, bgHeight, 5, 5)
 
-        -- Game title text with shadow
-        love.graphics.setColor(0, 0, 0, 0.8)
-        love.graphics.printf(selectedGame.title, bgX + 1, bgY + padding + 1, bgWidth, "center")
-        love.graphics.setColor(1, 1, 1)
-        love.graphics.printf(selectedGame.title, bgX, bgY + padding, bgWidth, "center")
-    end
+    -- Launcher title text with shadow
+    love.graphics.setColor(0, 0, 0, 0.8)
+    love.graphics.printf(launcherTitle, bgX + 1, bgY + padding + 1, bgWidth, "center")
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.printf(launcherTitle, bgX, bgY + padding, bgWidth, "center")
 
     -- Game tiles
     local centerX = w / 2
@@ -289,6 +287,16 @@ function draw.drawLauncher(launcher)
         local isVisuallySelected = visualDistance < 0.5
 
         drawTile(launcher, x, centerY, game, isVisuallySelected, scale, opacity)
+    end
+
+    -- Selected game title at bottom
+    local selectedGame = launcher.games[launcher.selectedIndex]
+    if selectedGame then
+        love.graphics.setFont(launcher.titleFont)
+        love.graphics.setColor(0, 0, 0, 0.8)
+        love.graphics.printf(selectedGame.title, 1, h - 111, w, "center")
+        love.graphics.setColor(launcher.theme.textColor)
+        love.graphics.printf(selectedGame.title, 0, h - 112, w, "center")
     end
 
     -- Footer
