@@ -41,6 +41,14 @@ function input.handleKeypress(launcher, key)
                 print("No source code URL available for: " .. game.title)
             end
         end,
+        b = function()
+            local game = launcher.games[launcher.selectedIndex]
+            if game.url and game.url ~= "" then
+                love.system.openURL(game.url)
+            else
+                print("No author URL available for: " .. game.title)
+            end
+        end,
         escape = love.event.quit
     }
 
@@ -52,7 +60,15 @@ end
 function input.handleGamepadPress(launcher, joystick, button)
     local buttonActions = {
         a = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
-        b = love.event.quit,
+        b = function()
+            local game = launcher.games[launcher.selectedIndex]
+            if game.url and game.url ~= "" then
+                love.system.openURL(game.url)
+            else
+                print("No author URL available for: " .. game.title)
+            end
+        end,
+        y = love.event.quit,
         dpright = function() moveSelection(launcher, 1) end,
         dpleft = function() moveSelection(launcher, -1) end
     }
