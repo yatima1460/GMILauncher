@@ -41,7 +41,8 @@ function gameLauncher.launch(game)
         -- Use start command to launch asynchronously - this returns immediately
         cmd = 'start "" "' .. exePath .. '"'
     else  -- Linux, OS X
-        cmd = 'wine "' .. game.exe .. '" &'
+        local exePath = game.path .. "/" .. game.exe
+        cmd = 'wine "' .. exePath .. '" &'
     end
 
     print("Executing: " .. cmd)
