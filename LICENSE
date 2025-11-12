@@ -1,3 +1,65 @@
+COPYRIGHT NOTICE AND ADDITIONAL RESTRICTIONS
+
+Copyright (C) 2024-2025 GameMaker Italia Launcher Contributors
+
+ADDITIONAL RESTRICTION - PROHIBITED ENTITIES:
+
+Notwithstanding any terms in the GNU General Public License Version 2 below,
+the following entities and any of their parent companies, subsidiaries,
+affiliates, assigns, successors in interest, or any entities under their
+direct or indirect control (collectively, "Prohibited Entities") are
+EXPLICITLY DENIED any and all rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of this software, or to permit
+others to do so on their behalf:
+
+1. Opera Software AS and all of its subsidiaries, affiliates, parent
+   companies, and related entities;
+
+2. Opera GX and all related brands, products, or services;
+
+3. GameMaker Studio, GameMaker, YoYo Games, and all related brands,
+   products, services, subsidiaries, affiliates, and parent companies;
+
+4. Any entity that has acquired, merged with, or exercises control over
+   any of the aforementioned entities;
+
+5. Any employee, contractor, agent, or representative acting on behalf
+   of any Prohibited Entity in their official capacity;
+
+6. Any entity that is directly or indirectly owned (in whole or in part,
+   by equity, debt, or otherwise) or controlled by any Prohibited Entity.
+
+For purposes of this restriction, "use" includes but is not limited to:
+running, executing, deploying, incorporating, embedding, reverse engineering,
+decompiling, disassembling, displaying, distributing, hosting, or making
+available the software or any derivative works thereof, whether for
+commercial, promotional, research, development, or any other purpose
+whatsoever.
+
+This restriction shall be construed broadly to prevent any meaningful
+utilization of the software by Prohibited Entities. This prohibition
+extends to all versions, forks, modifications, and derivative works of
+this software.
+
+VIOLATION: Any attempt by a Prohibited Entity to use this software shall
+be deemed a material breach of this license and an infringement of copyright.
+The copyright holders reserve all rights to seek legal remedies including
+but not limited to injunctive relief, monetary damages, and attorney's fees.
+
+SEVERABILITY: If any court of competent jurisdiction determines that the
+above restriction is unenforceable or invalid under applicable law, such
+determination shall not affect the enforceability or validity of the
+remaining provisions of this license, and this software shall revert to
+the terms of the GNU General Public License Version 2 as applied to all
+other parties, while the Prohibited Entities shall have no license
+whatsoever to use this software.
+
+For all other entities not listed as Prohibited Entities above, this
+software is licensed under the GNU General Public License Version 2 as
+set forth below.
+
+================================================================================
+
 GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
 
