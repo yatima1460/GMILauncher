@@ -201,15 +201,6 @@ try {
 
     Write-Success "Packaged all files to $OutputDir/"
 
-    # Create ZIP archive
-    Write-Step "Creating distribution archive"
-    $zipFile = "GMILauncher-Windows.zip"
-    if (Test-Path $zipFile) {
-        Remove-Item $zipFile -Force
-    }
-    Compress-Archive -Path "$OutputDir/*" -DestinationPath $zipFile -Force
-    Write-Success "Created $zipFile"
-
     # Cleanup temporary files
     Write-Step "Cleaning up temporary files"
     Remove-Item $buildDir -Recurse -Force -ErrorAction SilentlyContinue
