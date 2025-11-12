@@ -20,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
         lfs: true
@@ -30,11 +30,15 @@ jobs:
       run: |
         ./build.ps1 -LoveVersion $env:LOVE_VERSION
 
+    - name: Generate .zip archive
+      shell: pwsh
+      run: Compress-Archive -Path "dist\*" -DestinationPath GMILauncher-Windows.zip
+
     - name: Upload artifacts
       uses: actions/upload-artifact@v5
       with:
         name: GMILauncher-Windows
-        path: dist
+        path: GMILauncher-Windows.zip
         if-no-files-found: error
         retention-days: 30
         compression-level: 9
@@ -65,10 +69,12 @@ jobs:
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         files: GMILauncher-Windows.zip
         body_path: release_notes.md
         generate_release_notes: true
+        fail_on_unmatched_files: true
+        make_latest: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
