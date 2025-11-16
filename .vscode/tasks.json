@@ -31,13 +31,24 @@
         {
             "label": "Build GMILauncher",
             "type": "shell",
-            "command": "powershell",
-            "args": [
-                "-ExecutionPolicy",
-                "Bypass",
-                "-File",
-                "${workspaceFolder}/build.ps1"
-            ],
+            "windows": {
+                "command": "powershell",
+                "args": [
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}\\build.ps1"
+                ]
+            },
+            "osx": {
+                "command": "pwsh",
+                "args": [
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-File",
+                    "${workspaceFolder}/build.ps1"
+                ]
+            },
             "presentation": {
                 "reveal": "always",
                 "panel": "new"
@@ -55,6 +66,12 @@
                 "command": "${workspaceFolder}\\dist\\GMILauncher.exe",
                 "args": [
                     "--console"
+                ]
+            },
+            "osx": {
+                "command": "wine",
+                "args": [
+                    "${workspaceFolder}/dist/GMILauncher.exe",
                 ]
             },
             "presentation": {
