@@ -1,0 +1,60 @@
+{
+  "card": {
+    "bone": "Osso",
+    "bone-desc": "Vale 1 punto altezza.",
+    "bones": "Ammasso di ossa",
+    "bones-desc": "Vale 3 punti altezza.",
+    "mouse": "Topo",
+    "mouse-desc": "Un banale topo di fogna. Vale 1 punto altezza.",
+    "spider": "Ragno",
+    "spider-desc": "Fai saltare il turno all'avversario. Vale 1 punto altezza.",
+    "vampire": "Vampiro",
+    "vampire-desc": "",
+    "ghost": "Fantasma",
+    "ghost-desc": "Inconsistente. Vale 0 punti altezza",
+    "knight": "Cavaliere dell'Apocalisse",
+    "knight-desc": "Raccoglili tutti e 4 per vincere istantaneamente. Vale 1 punto altezza",
+    "switch": "Scambio",
+    "switch-desc": "",
+    "cat": "Gatto",
+    "cat-desc": "Gatto"
+  },
+  "HUD": {
+    "x-input": "Valore X input",
+    "game-turn": "Turno del giocatore"
+  },
+  "obj_game": {
+    "deception-instruction": "Inquadra con il telefono il QR Code\nper scoprire il tuo [#b07994]INGANNO[#cccccc]\nOppure clicca sul QR Code se sei lontano da occhi indiscreti",
+    "height": "Altezza torre:",
+    "q_mouse": "Carte topo:",
+    "q_ghost": "Carte fantasma:",
+    "deception-p1": "Inganno giocatore 1: ",
+    "deception-p2": "Inganno giocatore 2: ",
+    "winner": "Il vincitore è [#b07994]"
+  },
+  "obj_logo": {
+    "click_text": "[#b07994]Clicca [#cccccc]per iniziare"
+  },
+  "player": {
+    "player-one": "Giocatore 1",
+    "player-two": "Giocatore 2",
+    "noone": "nessuno"
+  },
+  "startMenu": {
+    "start": "Nuova partita",
+    "continue": "Carica",
+    "settings": "Opzioni",
+    "exit": "Esci",
+    "fullscreen": "Fullscreen",
+    "language": "Lingua",
+    "music-volume": "Volume musica: {0}",
+    "sfx-volume": "Volume effetti sonori: {0}",
+    "back": "Indietro"
+  },
+  "tricks": {
+    "sweet": "Dolcetto: nessun inganno per te in questa partita.",
+    "mouse": "Proliferazione: se raccolgi tutte le carte topo nella\ntua torre hai un bonus +3 in altezza.",
+    "short-tower": "Botte piccola: vinci se hai la torre più bassa.",
+    "ghost": "Seduta spiritica: i fantasmi valgono 1 in altezza."
+  }
+}
