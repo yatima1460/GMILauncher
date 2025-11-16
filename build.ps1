@@ -144,7 +144,12 @@ try {
         Write-Host "  Setting icon using rcedit..."
         Write-Host "    Icon file: assets/gmi_logo.ico"
         Write-Host "    Target EXE: $loveExe"
-        $result = & "vendor/rcedit-x64.exe" $loveExe --set-icon "assets/gmi_logo.ico" 2>&1
+        # Use wine on Linux/macOS to run rcedit
+        if ($IsWindows -or $env:OS -eq "Windows_NT") {
+            $result = & "vendor/rcedit-x64.exe" $loveExe --set-icon "assets/gmi_logo.ico" 2>&1
+        } else {
+            $result = & wine "vendor/rcedit-x64.exe" $loveExe --set-icon "assets/gmi_logo.ico" 2>&1
+        }
         if ($LASTEXITCODE -eq 0) {
             Write-Success "rcedit completed successfully"
         } else {
