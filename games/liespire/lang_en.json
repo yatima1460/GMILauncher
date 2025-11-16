@@ -1,0 +1,60 @@
+{
+  "card": {
+    "bone": "Bone",
+    "bone-desc": "Worth 1 height point.",
+    "bones": "Pile of Bones",
+    "bones-desc": "Worth 3 height points.",
+    "mouse": "Mouse",
+    "mouse-desc": "A common sewer mouse. Worth 1 height point.",
+    "spider": "Spider",
+    "spider-desc": "Make the opponent skip his turn. Worth 1 height point.",
+    "vampire": "Vampire",
+    "vampire-desc": "",
+    "ghost": "Ghost",
+    "ghost-desc": "Insubstantial. Worth 0 height points.",
+    "knight": "Horsemen of the Apocalypse",
+    "knight-desc": "Collect all 4 of them to win instantly. Worth 1 height point.",
+    "switch": "Switch",
+    "switch-desc": "",
+    "cat": "Cat",
+    "cat-desc": "Cat"
+  },
+  "HUD": {
+    "x-input": "X input value",
+    "game-turn": "Player's turn"
+  },
+  "obj_game": {
+    "deception-instruction": "Scan the QR Code with your phone\nto discover your [#b07994]DECEPTION[#cccccc]\nOr click the QR Code if you're away from prying eyes",
+    "height": "Tower height:",
+    "q_mouse": "Mouse cards:",
+    "q_ghost": "Ghost cards:",
+    "deception-p1": "Player 1 deception: ",
+    "deception-p2": "Player 2 deception: ",
+    "winner": "The winner is [#b07994]"
+  },
+  "obj_logo": {
+    "click_text": "[#b07994]Mouse click [#cccccc]to start"
+  },
+  "player": {
+    "player-one": "Player 1",
+    "player-two": "Player 2",
+    "noone": "Noone"
+  },
+  "startMenu": {
+    "start": "Play",
+    "continue": "Load",
+    "settings": "Options",
+    "exit": "Exit",
+    "fullscreen": "Fullscreen",
+    "language": "Language",
+    "music-volume": "Music volume: {0}",
+    "sfx-volume": "SFX volume: {0}",
+    "back": "Back"
+  },
+  "tricks": {
+    "sweet": "Treat: no deception for you in this game.",
+    "mouse": "Proliferation: if you collect all the mouse\ncards in your tower, you gain a +3 height bonus.",
+    "short-tower": "Small Barrel: you win if you have the lowest tower.",
+    "ghost": "Spiritual Session: ghosts are worth 1 in height."
+  }
+}
