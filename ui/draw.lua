@@ -141,20 +141,10 @@ local function drawMessageBox(launcher)
     love.graphics.setLineWidth(3)
     love.graphics.rectangle("line", boxX, boxY, boxWidth, boxHeight, 10, 10)
 
-    -- Title
-    love.graphics.setFont(launcher.titleFont)
-    love.graphics.setColor(launcher.theme.textColor)
-    love.graphics.printf(launcher.messageBoxTitle, boxX, boxY + 20, boxWidth, "center")
-
     -- Message text
     love.graphics.setFont(launcher.gameFont)
-    love.graphics.setColor(launcher.theme.subtextColor)
-    love.graphics.printf(launcher.messageBoxText, boxX + 20, boxY + 70, boxWidth - 40, "center")
-
-    -- Dismiss instruction
-    love.graphics.setFont(launcher.smallFont)
-    love.graphics.setColor(launcher.theme.accentColor)
-    love.graphics.printf("Press any key or button to continue", boxX, boxY + boxHeight - 40, boxWidth, "center")
+    love.graphics.setColor(launcher.theme.textColor)
+    love.graphics.printf(launcher.messageBoxText, boxX + 20, boxY + 20, boxWidth - 40, "center")
 end
 
 local function drawLaunchingScreen(launcher)

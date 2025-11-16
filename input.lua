@@ -66,6 +66,18 @@ function input.handleKeypress(launcher, key)
                 launcher.messageBoxText = "No author page available for\n" .. game.title
             end
         end,
+        d = function()
+            local game = launcher.games[launcher.selectedIndex]
+            if game.description and game.description ~= "" then
+                launcher.showMessageBox = true
+                launcher.messageBoxTitle = game.title
+                launcher.messageBoxText = game.description
+            else
+                launcher.showMessageBox = true
+                launcher.messageBoxTitle = "Not Available"
+                launcher.messageBoxText = "No description available for\n" .. game.title
+            end
+        end,
         escape = love.event.quit
     }
 
