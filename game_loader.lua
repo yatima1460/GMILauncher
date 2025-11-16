@@ -82,6 +82,27 @@ function gameLoader.loadGames(gamesPath)
         end
     end
 
+    -- Sort games by year (newer first, games without year go last)
+    table.sort(games, function(a, b)
+        local yearA = tonumber(a.year)
+        local yearB = tonumber(b.year)
+
+        -- If neither has a year, maintain original order
+        if not yearA and not yearB then
+            return false
+        end
+        -- If only a has no year, b comes first
+        if not yearA then
+            return false
+        end
+        -- If only b has no year, a comes first
+        if not yearB then
+            return true
+        end
+        -- Both have years, sort by year descending (newer first)
+        return yearA > yearB
+    end)
+
     -- Fallback if no games found
     if #games == 0 then
         games = {
