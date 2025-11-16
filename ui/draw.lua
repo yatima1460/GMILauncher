@@ -126,9 +126,26 @@ local function drawMessageBox(launcher)
     love.graphics.setColor(0, 0, 0, 0.6)
     love.graphics.rectangle("fill", 0, 0, w, h)
 
-    -- Center message box
+    -- Calculate message box dimensions based on text
     local boxWidth = 500
-    local boxHeight = 180
+    local padding = 40
+    local titlePadding = 20
+
+    -- Set font for title
+    love.graphics.setFont(launcher.gameFont)
+    local titleHeight = launcher.gameFont:getHeight()
+
+    -- Calculate text height
+    love.graphics.setFont(launcher.gameFont)
+    local _, wrappedText = launcher.gameFont:getWrap(launcher.messageBoxText, boxWidth - padding)
+    local textHeight = #wrappedText * launcher.gameFont:getHeight()
+
+    -- Calculate total box height (title + text + padding)
+    local boxHeight = titlePadding * 2 + titleHeight + padding + textHeight
+
+    -- Ensure minimum height
+    boxHeight = math.max(boxHeight, 150)
+
     local boxX = (w - boxWidth) / 2
     local boxY = (h - boxHeight) / 2
 
@@ -141,10 +158,15 @@ local function drawMessageBox(launcher)
     love.graphics.setLineWidth(3)
     love.graphics.rectangle("line", boxX, boxY, boxWidth, boxHeight, 10, 10)
 
+    -- Title text
+    love.graphics.setFont(launcher.gameFont)
+    love.graphics.setColor(launcher.theme.textColor)
+    love.graphics.printf(launcher.messageBoxTitle, boxX + 20, boxY + titlePadding, boxWidth - 40, "center")
+
     -- Message text
     love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(launcher.theme.textColor)
-    love.graphics.printf(launcher.messageBoxText, boxX + 20, boxY + 20, boxWidth - 40, "center")
+    love.graphics.printf(launcher.messageBoxText, boxX + 20, boxY + titlePadding + titleHeight + 20, boxWidth - 40, "center")
 end
 
 local function drawLaunchingScreen(launcher)
