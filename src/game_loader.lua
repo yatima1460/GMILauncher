@@ -1,85 +1,170 @@
 local gameLoader = {}
 
+local function trim(value)
+    if type(value) ~= "string" then
+        return nil
+    end
+
+    return value:match("^%s*(.-)%s*$")
+end
+
+local function optionalString(value)
+    local text = trim(value)
+    if text == "" then
+        return nil
+    end
+
+    return text
+end
+
+local function isSafeExecutableName(value)
+    return type(value) == "string"
+        and value ~= ""
+        and not value:find("[/\\]")
+        and not value:find('[%c"<>|&^%%]')
+end
+
+local function loadMetadata(metadataPath)
+    local content = love.filesystem.read(metadataPath)
+    if not content then
+        return nil, "failed to read metadata file"
+    end
+
+    local chunk
+    local err
+    if _VERSION == "Lua 5.1" then
+        chunk, err = loadstring(content, "@" .. metadataPath)
+        if chunk then
+            setfenv(chunk, {})
+        end
+    else
+        chunk, err = load(content, "@" .. metadataPath, "t", {})
+    end
+
+    if not chunk then
+        return nil, err or "failed to load metadata file"
+    end
+
+    local success, result = pcall(chunk)
+    if not success then
+        return nil, result
+    end
+    if type(result) ~= "table" then
+        return nil, "metadata did not return a table"
+    end
+
+    return result, nil
+end
+
+local function normalizeMetadata(metadata, folder)
+    local year = optionalString(metadata.year)
+    if year and not year:match("^%d%d%d%d$") then
+        year = nil
+    end
+
+    local exe = optionalString(metadata.exe) or (folder .. ".exe")
+    if not isSafeExecutableName(exe) then
+        return nil, "unsafe executable name: " .. tostring(exe)
+    end
+
+    return {
+        title = optionalString(metadata.title) or folder,
+        exe = exe,
+        author = optionalString(metadata.author) or "Unknown",
+        version = optionalString(metadata.version),
+        url = optionalString(metadata.url) or "",
+        source = optionalString(metadata.source),
+        year = year,
+        description = optionalString(metadata.description)
+    }, nil
+end
+
+local function findGamesPath(gamesPath)
+    if love.filesystem.getInfo(gamesPath, "directory") then
+        return gamesPath
+    end
+
+    local isFused = love.filesystem.isFused and love.filesystem.isFused()
+    local sourceDir = love.filesystem.getSourceBaseDirectory()
+    if not isFused or not sourceDir or sourceDir == "" then
+        return gamesPath
+    end
+
+    local mounted = love.filesystem.mount(sourceDir, "external")
+    local externalGamesPath = "external/games"
+    if mounted and love.filesystem.getInfo(externalGamesPath, "directory") then
+        return externalGamesPath
+    end
+
+    return gamesPath
+end
+
 function gameLoader.loadGames(gamesPath)
     local games = {}
 
-    -- Mount the source directory (where the .exe is located) so we can access external games folder
-    local sourceDir = love.filesystem.getSourceBaseDirectory()
-    if sourceDir and sourceDir ~= "" then
-        love.filesystem.mount(sourceDir, "external")
-        -- Try to load from external mount point first (for games outside the .exe)
-        local externalGamesPath = "external/games"
-        if love.filesystem.getInfo(externalGamesPath) then
-            gamesPath = externalGamesPath
-        end
+    gamesPath = findGamesPath(gamesPath)
+    print("Loading games from: " .. gamesPath)
+
+    if not love.filesystem.getInfo(gamesPath, "directory") then
+        print("Games directory not found: " .. gamesPath)
+        gamesPath = nil
     end
 
-    local gamesFolders = love.filesystem.getDirectoryItems(gamesPath)
-    print("Loading games from: " .. gamesPath)
-    
+    local gamesFolders = gamesPath and love.filesystem.getDirectoryItems(gamesPath) or {}
     for _, folder in ipairs(gamesFolders) do
         local folderPath = gamesPath .. "/" .. folder
 
         print("Checking folder: " .. folderPath)
 
         -- Check if it's actually a directory
-        local info = love.filesystem.getInfo(folderPath)
-        if info and info.type == "directory" then
+        if love.filesystem.getInfo(folderPath, "directory") then
             local metadataPath = folderPath .. "/metadata.lua"
             local coverPath = folderPath .. "/cover.png"
 
-            -- Try to load metadata
-            local metadata = {}
+            local metadata
             if love.filesystem.getInfo(metadataPath) then
-                local content = love.filesystem.read(metadataPath)
-                if content then
-                    -- Load the metadata as Lua code
-                    local metadataFunc = load(content)
-                    if metadataFunc then
-                        local success, result = pcall(metadataFunc)
-                        if success and type(result) == "table" then
-                            metadata = result
-                        else
-                            print("Failed to execute metadata file: " .. metadataPath)
-                        end
-                    else
-                        print("Failed to load metadata file: " .. metadataPath)
-                    end
-                else
-                    print("Failed to read metadata file: " .. metadataPath)
+                local err
+                metadata, err = loadMetadata(metadataPath)
+                if err then
+                    print("Failed to load metadata file: " .. metadataPath .. " (" .. err .. ")")
                 end
             else
                 print("No metadata found for game directory, skipping: " .. folderPath)
             end
 
+            if metadata then
+                local gameInfo
+                local err
+                gameInfo, err = normalizeMetadata(metadata, folder)
+                if err then
+                    print("Invalid metadata for game directory, skipping: " .. folderPath .. " (" .. err .. ")")
+                else
+                    local exeVirtualPath = folderPath .. "/" .. gameInfo.exe
+                    if not love.filesystem.getInfo(exeVirtualPath, "file") then
+                        print("Executable not found for game, skipping: " .. exeVirtualPath)
+                    else
 
-            -- Try to load cover image
-            local coverImage = nil
-            if love.filesystem.getInfo(coverPath) then
-                local success, image = pcall(love.graphics.newImage, coverPath)
-                if success then
-                    coverImage = image
-                else 
-                    print("Failed to load cover image: " .. coverPath)
+                        local coverImage = nil
+                        if love.filesystem.getInfo(coverPath, "file") then
+                            local success, image = pcall(love.graphics.newImage, coverPath)
+                            if success then
+                                coverImage = image
+                            else
+                                print("Failed to load cover image: " .. coverPath)
+                            end
+                        else
+                            print("No cover image found for game: " .. gameInfo.title)
+                        end
+
+                        gameInfo.path = folderPath
+                        gameInfo.exeVirtualPath = exeVirtualPath
+                        gameInfo.icon = coverImage
+
+                        table.insert(games, gameInfo)
+                        print("Loaded game: " .. gameInfo.title)
+                    end
                 end
-            else
-                print("No cover image found for game: " .. (metadata.title or folder))
             end
-
-            -- Add game to launcher
-            table.insert(games, {
-                title = metadata.title or folder,
-                path = folderPath,
-                exe = metadata.exe or folder .. ".exe",
-                author = metadata.author or "Unknown",
-                version = metadata.version or nil,
-                url = metadata.url or "",
-                icon = coverImage,
-                source = metadata.source or nil,
-                year = metadata.year or nil,
-                description = metadata.description or nil
-            })
-            print("Loaded game: " .. (metadata.title or folder))
         end
     end
 
@@ -107,7 +192,15 @@ function gameLoader.loadGames(gamesPath)
     -- Fallback if no games found
     if #games == 0 then
         games = {
-            { title = "No Games Found", path = "", author = "Add games to /games folder", version = "", icon = nil }
+            {
+                title = "No Games Found",
+                path = "",
+                exe = "",
+                exeVirtualPath = "",
+                author = "Add games to /games folder",
+                version = "",
+                icon = nil
+            }
         }
     end
 
