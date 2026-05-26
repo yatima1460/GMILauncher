@@ -17,6 +17,6 @@ SMALL BARREL: you win if you have the lowest tower;
 SPIRITUAL SESSION: ghosts are worth 1 in height;
 TREAT: no deception for you this game.
 
-Remember. Deceive. Win. 
+Remember. Deceive. Win.
     ]]
 }

@@ -151,21 +151,29 @@ try {
         Write-Host "    Icon file: assets/gmi_logo.ico"
         Write-Host "    Target EXE: $loveExe"
         # Use wine on Linux/macOS to run rcedit
+        $result = $null
+        $rceditExitCode = $null
         if ($IsWindows -or $env:OS -eq "Windows_NT") {
             $result = & "vendor/rcedit-x64.exe" $loveExe --set-icon "assets/gmi_logo.ico" 2>&1
-        } else {
+            $rceditExitCode = $LASTEXITCODE
+        } elseif (Get-Command wine -ErrorAction SilentlyContinue) {
             $result = & wine "vendor/rcedit-x64.exe" $loveExe --set-icon "assets/gmi_logo.ico" 2>&1
+            $rceditExitCode = $LASTEXITCODE
+        } else {
+            Write-Host "  Warning: wine is not installed; skipping custom icon" -ForegroundColor Yellow
         }
-        if ($LASTEXITCODE -eq 0) {
+        if ($null -eq $rceditExitCode) {
+            Write-Host "  Continuing without custom icon" -ForegroundColor Yellow
+        } elseif ($rceditExitCode -eq 0) {
             Write-Success "rcedit completed successfully"
         } else {
-            Write-Host "  Warning: rcedit returned exit code $LASTEXITCODE" -ForegroundColor Yellow
+            Write-Host "  Warning: rcedit returned exit code $rceditExitCode" -ForegroundColor Yellow
             if ($result) {
                 Write-Host "  Output: $result" -ForegroundColor Yellow
             }
         }
     } catch {
-        Write-Warning "  Warning: Failed to set custom icon: $_" -ForegroundColor Yellow
+        Write-Host "  Warning: Failed to set custom icon: $_" -ForegroundColor Yellow
     }
     
 

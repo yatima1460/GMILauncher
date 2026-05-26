@@ -13,7 +13,29 @@ env:
   LOVE_VERSION: "11.5"
 
 jobs:
+  lint-lua:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Install Lua tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y lua5.4 luarocks
+        sudo luarocks install luacheck
+
+    - name: Check Lua syntax
+      run: |
+        luac5.4 -p main.lua conf.lua src/*.lua src/ui/*.lua games/*/metadata.lua
+
+    - name: Run luacheck
+      run: |
+        luacheck main.lua conf.lua src/*.lua src/ui/*.lua games/*/metadata.lua
+
   build-windows:
+    needs: lint-lua
     runs-on: windows-latest
     permissions:
       contents: write
