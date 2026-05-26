@@ -52,6 +52,12 @@ try {
     if (-not (Test-Path "main.lua")) {
         throw "main.lua not found. Please run this script from the project root directory."
     }
+    if (-not (Test-Path "conf.lua")) {
+        throw "conf.lua not found. Please run this script from the project root directory."
+    }
+    if (-not (Test-Path "src/main.lua")) {
+        throw "src/main.lua not found. Please run this script from the project root directory."
+    }
 
     # Download LOVE2D for Windows
     $loveDir = "love2d"
@@ -103,7 +109,7 @@ try {
 
     # Copy directories that exist (preserving structure)
     # Note: games folder is excluded and will be copied to dist separately
-    $dirs = @("assets", "ui", "utils", "vendor", "docs")
+    $dirs = @("assets", "src", "vendor", "docs")
     foreach ($dir in $dirs) {
         if (Test-Path $dir) {
             Write-Host "  Copying directory: $dir"
