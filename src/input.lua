@@ -1,4 +1,4 @@
-local gameLauncher = require("game_launcher")
+local gameLauncher = require("src.game_launcher")
 
 local input = {}
 
