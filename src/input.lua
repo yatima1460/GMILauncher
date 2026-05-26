@@ -2,6 +2,58 @@ local gameLauncher = require("src.game_launcher")
 
 local input = {}
 
+local function selectedGame(launcher)
+    return launcher.games[launcher.selectedIndex]
+end
+
+local function showMessageBox(launcher, title, text)
+    launcher.showMessageBox = true
+    launcher.messageBoxTitle = title
+    launcher.messageBoxText = text
+end
+
+local function dismissMessageBox(launcher)
+    if not launcher.showMessageBox then
+        return false
+    end
+
+    launcher.showMessageBox = false
+    launcher.messageBoxTitle = ""
+    launcher.messageBoxText = ""
+    return true
+end
+
+local function launchSelectedGame(launcher)
+    gameLauncher.launch(selectedGame(launcher), launcher)
+end
+
+local function openOptionalUrl(launcher, field, fallbackText)
+    local game = selectedGame(launcher)
+    if not game then
+        return
+    end
+
+    local url = game[field]
+    if url and url ~= "" then
+        love.system.openURL(url)
+    else
+        showMessageBox(launcher, "Not Available", fallbackText .. "\n" .. game.title)
+    end
+end
+
+local function showSelectedDescription(launcher)
+    local game = selectedGame(launcher)
+    if not game then
+        return
+    end
+
+    if game.description and game.description ~= "" then
+        showMessageBox(launcher, game.title, game.description)
+    else
+        showMessageBox(launcher, "Not Available", "No description available for\n" .. game.title)
+    end
+end
+
 local function moveSelection(launcher, direction)
     -- Don't allow navigation if message box is showing
     if launcher.showMessageBox then
@@ -34,50 +86,22 @@ end
 
 function input.handleKeypress(launcher, key)
     -- If message box is showing, dismiss it on any key press
-    if launcher.showMessageBox then
-        launcher.showMessageBox = false
-        launcher.messageBoxTitle = ""
-        launcher.messageBoxText = ""
+    if dismissMessageBox(launcher) then
         return
     end
 
     local keyActions = {
         right = function() moveSelection(launcher, 1) end,
         left = function() moveSelection(launcher, -1) end,
-        ["return"] = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
-        space = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
+        ["return"] = function() launchSelectedGame(launcher) end,
+        space = function() launchSelectedGame(launcher) end,
         s = function()
-            local game = launcher.games[launcher.selectedIndex]
-            if game.source then
-                love.system.openURL(game.source)
-            else
-                launcher.showMessageBox = true
-                launcher.messageBoxTitle = "Not Available"
-                launcher.messageBoxText = "No source code available for\n" .. game.title
-            end
+            openOptionalUrl(launcher, "source", "No source code available for")
         end,
         b = function()
-            local game = launcher.games[launcher.selectedIndex]
-            if game.url and game.url ~= "" then
-                love.system.openURL(game.url)
-            else
-                launcher.showMessageBox = true
-                launcher.messageBoxTitle = "Not Available"
-                launcher.messageBoxText = "No author page available for\n" .. game.title
-            end
+            openOptionalUrl(launcher, "url", "No author page available for")
         end,
-        d = function()
-            local game = launcher.games[launcher.selectedIndex]
-            if game.description and game.description ~= "" then
-                launcher.showMessageBox = true
-                launcher.messageBoxTitle = game.title
-                launcher.messageBoxText = game.description
-            else
-                launcher.showMessageBox = true
-                launcher.messageBoxTitle = "Not Available"
-                launcher.messageBoxText = "No description available for\n" .. game.title
-            end
-        end,
+        d = function() showSelectedDescription(launcher) end,
         escape = love.event.quit
     }
 
@@ -86,26 +110,16 @@ function input.handleKeypress(launcher, key)
     end
 end
 
-function input.handleGamepadPress(launcher, joystick, button)
+function input.handleGamepadPress(launcher, _joystick, button)
     -- If message box is showing, dismiss it on any button press
-    if launcher.showMessageBox then
-        launcher.showMessageBox = false
-        launcher.messageBoxTitle = ""
-        launcher.messageBoxText = ""
+    if dismissMessageBox(launcher) then
         return
     end
 
     local buttonActions = {
-        a = function() gameLauncher.launch(launcher.games[launcher.selectedIndex], launcher) end,
+        a = function() launchSelectedGame(launcher) end,
         b = function()
-            local game = launcher.games[launcher.selectedIndex]
-            if game.url and game.url ~= "" then
-                love.system.openURL(game.url)
-            else
-                launcher.showMessageBox = true
-                launcher.messageBoxTitle = "Not Available"
-                launcher.messageBoxText = "No author page available for\n" .. game.title
-            end
+            openOptionalUrl(launcher, "url", "No author page available for")
         end,
         y = love.event.quit,
         dpright = function() moveSelection(launcher, 1) end,
