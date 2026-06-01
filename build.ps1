@@ -117,6 +117,24 @@ try {
         }
     }
 
+    Write-Host "  Writing build metadata..."
+    $buildVersion = "dev"
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $gitVersion = & git describe --tags --always --dirty 2>$null
+        if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($gitVersion)) {
+            $buildVersion = $gitVersion.Trim()
+        } else {
+            $gitCommit = & git rev-parse --short HEAD 2>$null
+            if ($LASTEXITCODE -eq 0 -and -not [string]::IsNullOrWhiteSpace($gitCommit)) {
+                $buildVersion = $gitCommit.Trim()
+            }
+        }
+    }
+
+    $buildVersionLiteral = ConvertTo-Json $buildVersion -Compress
+    Set-Content -Path "$buildDir/src/build_info.lua" -Value "return {`n    version = $buildVersionLiteral`n}`n" -NoNewline
+    Write-Success "Build version: $buildVersion"
+
     Write-Success "Copied all files to build directory"
 
     # Create .love file (which is just a ZIP with .love extension)

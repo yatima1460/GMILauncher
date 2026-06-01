@@ -1,3 +1,5 @@
+local buildInfo = require("src.build_info")
+
 local gameLoader = {}
 
 local function trim(value)
@@ -99,6 +101,38 @@ local function findGamesPath(gamesPath)
     return gamesPath
 end
 
+local function loadOptionalImage(imagePath)
+    if not love.filesystem.getInfo(imagePath, "file") then
+        return nil
+    end
+
+    local success, image = pcall(love.graphics.newImage, imagePath)
+    if success then
+        return image
+    end
+
+    print("Failed to load image: " .. imagePath)
+    return nil
+end
+
+local function createLauncherCreditsTile()
+    local launcherUrl = "https://github.com/yatima1460/GMILauncher"
+
+    return {
+        title = "GMILauncher Credits",
+        path = "",
+        exe = "",
+        exeVirtualPath = "",
+        author = "yatima1460",
+        version = optionalString(buildInfo.version),
+        url = launcherUrl,
+        source = launcherUrl,
+        year = nil,
+        description = "GameMaker Italia Launcher\n\nCreated by yatima1460.\n\nGitHub: yatima1460/GMILauncher",
+        icon = loadOptionalImage("assets/gmi_logo.png")
+    }
+end
+
 function gameLoader.loadGames(gamesPath)
     local games = {}
 
@@ -146,12 +180,7 @@ function gameLoader.loadGames(gamesPath)
 
                         local coverImage = nil
                         if love.filesystem.getInfo(coverPath, "file") then
-                            local success, image = pcall(love.graphics.newImage, coverPath)
-                            if success then
-                                coverImage = image
-                            else
-                                print("Failed to load cover image: " .. coverPath)
-                            end
+                            coverImage = loadOptionalImage(coverPath)
                         else
                             print("No cover image found for game: " .. gameInfo.title)
                         end
@@ -203,6 +232,8 @@ function gameLoader.loadGames(gamesPath)
             }
         }
     end
+
+    table.insert(games, createLauncherCreditsTile())
 
     return games
 end
