@@ -35,11 +35,27 @@ function draw.drawLauncher(launcher)
 
     local selectedGame = launcher.games[launcher.selectedIndex]
     if selectedGame then
-        love.graphics.setFont(launcher.titleFont)
+        local titleFont = launcher.selectedTitleFont or launcher.titleFont
+        local titlePaddingX = 28 * uiScale
+        local titlePaddingY = 10 * uiScale
+        local maxTitleWidth = w - 80 * uiScale
+        local titleTextWidth = math.min(titleFont:getWidth(selectedGame.title), maxTitleWidth - titlePaddingX * 2)
+        local _, titleLines = titleFont:getWrap(selectedGame.title, titleTextWidth)
+        local titleTextHeight = #titleLines * titleFont:getHeight()
+        local titleBoxWidth = titleTextWidth + titlePaddingX * 2
+        local titleBoxHeight = titleTextHeight + titlePaddingY * 2
+        local titleBoxX = (w - titleBoxWidth) / 2
+        local titleBoxY = h - 150 * uiScale
+        local titleY = titleBoxY + titlePaddingY
+
+        love.graphics.setColor(0, 0, 0, 0.42)
+        love.graphics.rectangle("fill", titleBoxX, titleBoxY, titleBoxWidth, titleBoxHeight, 8 * uiScale, 8 * uiScale)
+
+        love.graphics.setFont(titleFont)
         love.graphics.setColor(0, 0, 0, 0.8)
-        love.graphics.printf(selectedGame.title, 1 * uiScale, h - 111 * uiScale, w, "center")
+        love.graphics.printf(selectedGame.title, titleBoxX + titlePaddingX + 2 * uiScale, titleY + 2 * uiScale, titleTextWidth, "center")
         love.graphics.setColor(launcher.theme.textColor)
-        love.graphics.printf(selectedGame.title, 0, h - 112 * uiScale, w, "center")
+        love.graphics.printf(selectedGame.title, titleBoxX + titlePaddingX, titleY, titleTextWidth, "center")
     end
 
     love.graphics.setFont(launcher.gameFont)

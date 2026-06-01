@@ -3,6 +3,7 @@ local layout = {}
 local BASE_WIDTH = 1280
 local BASE_HEIGHT = 720
 local BASE_TITLE_FONT = 24
+local BASE_SELECTED_TITLE_FONT = 40
 local BASE_GAME_FONT = 16
 local BASE_SMALL_FONT = 12
 
@@ -23,6 +24,7 @@ function layout.update(launcher)
     launcher.tileSizeHeight = math.floor(launcher.baseTileSizeHeight * scale + 0.5)
     launcher.tilePadding = math.floor(launcher.baseTilePadding * scale + 0.5)
     launcher.titleFont = scaledFont(BASE_TITLE_FONT, scale)
+    launcher.selectedTitleFont = scaledFont(BASE_SELECTED_TITLE_FONT, scale)
     launcher.gameFont = scaledFont(BASE_GAME_FONT, scale)
     launcher.smallFont = scaledFont(BASE_SMALL_FONT, scale)
 end
