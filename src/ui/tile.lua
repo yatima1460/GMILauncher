@@ -1,5 +1,13 @@
 local tile = {}
 
+local function formatVersion(version)
+    if version:match("^[vV]") then
+        return version
+    end
+
+    return "v" .. version
+end
+
 function tile.draw(launcher, x, y, game, isSelected, scale, opacity)
     local uiScale = launcher.uiScale or 1
 
@@ -66,10 +74,11 @@ function tile.draw(launcher, x, y, game, isSelected, scale, opacity)
 
     if game.version then
         local versionY = y + launcher.tileSizeHeight - 65 * uiScale + yOffset
+        local versionText = formatVersion(game.version)
         love.graphics.setColor(0, 0, 0, opacity * 0.7)
-        love.graphics.printf("v" .. game.version, x + 1, versionY + 1, launcher.tileSizeWidth, "center")
+        love.graphics.printf(versionText, x + 1, versionY + 1, launcher.tileSizeWidth, "center")
         love.graphics.setColor(launcher.theme.subtextColor[1], launcher.theme.subtextColor[2], launcher.theme.subtextColor[3], opacity)
-        love.graphics.printf("v" .. game.version, x, versionY, launcher.tileSizeWidth, "center")
+        love.graphics.printf(versionText, x, versionY, launcher.tileSizeWidth, "center")
     end
 
     local authorY = y + launcher.tileSizeHeight - 35 * uiScale + yOffset
