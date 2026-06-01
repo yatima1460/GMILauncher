@@ -2,13 +2,12 @@ local config = require("src.config")
 local gameLoader = require("src.game_loader")
 local draw = require("src.ui.draw")
 local input = require("src.input")
+local layout = require("src.ui.layout")
 
 local launcher = config
 
 function love.load()
-    launcher.titleFont = love.graphics.newFont(24)
-    launcher.gameFont = love.graphics.newFont(16)
-    launcher.smallFont = love.graphics.newFont(12)
+    layout.update(launcher)
     launcher.games = gameLoader.loadGames("games")
     love.audio.setVolume(0.1)
     launcher.navigationSound = love.audio.newSource("assets/sounds/523422__andersmmg__ding-1.wav", "static")
@@ -27,7 +26,13 @@ function love.update(dt)
 end
 
 function love.draw()
+    layout.update(launcher)
     draw.drawLauncher(launcher)
+end
+
+function love.resize()
+    launcher.uiScale = nil
+    layout.update(launcher)
 end
 
 function love.keypressed(key)
