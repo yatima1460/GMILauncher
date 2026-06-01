@@ -13,6 +13,7 @@ function draw.drawLauncher(launcher)
     local w, h = love.graphics.getDimensions()
     local time = love.timer.getTime()
     local shouldDrawMessageBox = launcher.showMessageBox
+    local uiScale = launcher.uiScale or 1
 
     background.drawAnimated(w, h, time)
     background.drawTitleBanner(launcher, w)
@@ -36,14 +37,14 @@ function draw.drawLauncher(launcher)
     if selectedGame then
         love.graphics.setFont(launcher.titleFont)
         love.graphics.setColor(0, 0, 0, 0.8)
-        love.graphics.printf(selectedGame.title, 1, h - 111, w, "center")
+        love.graphics.printf(selectedGame.title, 1 * uiScale, h - 111 * uiScale, w, "center")
         love.graphics.setColor(launcher.theme.textColor)
-        love.graphics.printf(selectedGame.title, 0, h - 112, w, "center")
+        love.graphics.printf(selectedGame.title, 0, h - 112 * uiScale, w, "center")
     end
 
     love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(launcher.theme.accentColor)
-    love.graphics.print(launcher.helpText, 40, h - 40)
+    love.graphics.print(launcher.helpText, 40 * uiScale, h - 40 * uiScale)
 
     if shouldDrawMessageBox then
         messages.drawMessageBox(launcher)

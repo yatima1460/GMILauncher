@@ -1,4 +1,6 @@
 local gameLauncher = require("src.game_launcher")
+local qrcode = require("src.qrcode")
+local layout = require("src.ui.layout")
 
 local input = {}
 
@@ -10,6 +12,23 @@ local function showMessageBox(launcher, title, text)
     launcher.showMessageBox = true
     launcher.messageBoxTitle = title
     launcher.messageBoxText = text
+    launcher.messageBoxQr = nil
+    launcher.messageBoxQrUrl = ""
+end
+
+local function showQrMessageBox(launcher, title, url)
+    local qr, err = qrcode.encode(url)
+
+    if not qr then
+        showMessageBox(launcher, "Not Available", err)
+        return
+    end
+
+    launcher.showMessageBox = true
+    launcher.messageBoxTitle = title
+    launcher.messageBoxText = "Scan to open author page"
+    launcher.messageBoxQr = qr
+    launcher.messageBoxQrUrl = url
 end
 
 local function dismissMessageBox(launcher)
@@ -20,11 +39,20 @@ local function dismissMessageBox(launcher)
     launcher.showMessageBox = false
     launcher.messageBoxTitle = ""
     launcher.messageBoxText = ""
+    launcher.messageBoxQr = nil
+    launcher.messageBoxQrUrl = ""
     return true
 end
 
 local function launchSelectedGame(launcher)
     gameLauncher.launch(selectedGame(launcher), launcher)
+end
+
+local function toggleFullscreen(launcher)
+    local isFullscreen = love.window.getFullscreen()
+    love.window.setFullscreen(not isFullscreen, "desktop")
+    launcher.uiScale = nil
+    layout.update(launcher)
 end
 
 local function openOptionalUrl(launcher, field, fallbackText)
@@ -51,6 +79,19 @@ local function showSelectedDescription(launcher)
         showMessageBox(launcher, game.title, game.description)
     else
         showMessageBox(launcher, "Not Available", "No description available for\n" .. game.title)
+    end
+end
+
+local function showSelectedUrlQr(launcher)
+    local game = selectedGame(launcher)
+    if not game then
+        return
+    end
+
+    if game.url and game.url ~= "" then
+        showQrMessageBox(launcher, game.title, game.url)
+    else
+        showMessageBox(launcher, "Not Available", "No author page available for\n" .. game.title)
     end
 end
 
@@ -101,7 +142,9 @@ function input.handleKeypress(launcher, key)
         b = function()
             openOptionalUrl(launcher, "url", "No author page available for")
         end,
+        q = function() showSelectedUrlQr(launcher) end,
         d = function() showSelectedDescription(launcher) end,
+        f = function() toggleFullscreen(launcher) end,
         escape = love.event.quit
     }
 
