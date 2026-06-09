@@ -19,6 +19,52 @@ local function optionalString(value)
     return text
 end
 
+local function isStringList(value)
+    if value == nil then
+        return true
+    end
+    if type(value) ~= "table" then
+        return false
+    end
+
+    for _, item in ipairs(value) do
+        if optionalString(item) == nil then
+            return false
+        end
+    end
+
+    return true
+end
+
+local function isSafeAssetName(value)
+    return type(value) == "string"
+        and value ~= ""
+        and not value:find("[/\\]")
+        and not value:find("%.%.", 1, true)
+        and not value:find('[%c"<>|&^%%]')
+end
+
+local function normalizeAssetList(value)
+    if not value then
+        return nil
+    end
+
+    local assets = {}
+    for _, item in ipairs(value) do
+        local asset = optionalString(item)
+        if not isSafeAssetName(asset) then
+            return nil, "unsafe asset name: " .. tostring(item)
+        end
+        table.insert(assets, asset)
+    end
+
+    if #assets == 0 then
+        return nil, nil
+    end
+
+    return assets, nil
+end
+
 local function isSafeExecutableName(value)
     return type(value) == "string"
         and value ~= ""
@@ -64,9 +110,23 @@ local function normalizeMetadata(metadata, folder)
         year = nil
     end
 
-    local exe = optionalString(metadata.exe) or (folder .. ".exe")
-    if not isSafeExecutableName(exe) then
+    if not isStringList(metadata.screenshots) then
+        return nil, "screenshots must be a list of file names"
+    end
+
+    local exe
+    if type(metadata.exe) == "string" and trim(metadata.exe) == "" then
+        exe = ""
+    else
+        exe = optionalString(metadata.exe) or (folder .. ".exe")
+    end
+    if exe ~= "" and not isSafeExecutableName(exe) then
         return nil, "unsafe executable name: " .. tostring(exe)
+    end
+
+    local screenshots, screenshotErr = normalizeAssetList(metadata.screenshots)
+    if screenshotErr then
+        return nil, screenshotErr
     end
 
     return {
@@ -77,7 +137,8 @@ local function normalizeMetadata(metadata, folder)
         url = optionalString(metadata.url) or "",
         source = optionalString(metadata.source),
         year = year,
-        description = optionalString(metadata.description)
+        description = optionalString(metadata.description),
+        screenshots = screenshots
     }, nil
 end
 
@@ -129,7 +190,8 @@ local function createLauncherCreditsTile()
         source = launcherUrl,
         year = nil,
         description = "GameMaker Italia Launcher\n\nCreated by yatima1460.\n\nGitHub: yatima1460/GMILauncher",
-        icon = loadOptionalImage("assets/gmi_logo.png")
+        icon = loadOptionalImage("assets/gmi_logo.png"),
+        screenshots = nil
     }
 end
 
@@ -173,11 +235,13 @@ function gameLoader.loadGames(gamesPath)
                 if err then
                     print("Invalid metadata for game directory, skipping: " .. folderPath .. " (" .. err .. ")")
                 else
-                    local exeVirtualPath = folderPath .. "/" .. gameInfo.exe
-                    if not love.filesystem.getInfo(exeVirtualPath, "file") then
-                        print("Executable not found for game, skipping: " .. exeVirtualPath)
-                    else
+                    local exeVirtualPath = gameInfo.exe ~= "" and (folderPath .. "/" .. gameInfo.exe) or ""
+                    local hasExecutable = exeVirtualPath ~= "" and love.filesystem.getInfo(exeVirtualPath, "file") ~= nil
+                    if exeVirtualPath ~= "" and not hasExecutable then
+                        print("Executable not found for game, using page-only entry: " .. exeVirtualPath)
+                    end
 
+                    if hasExecutable or (gameInfo.url and gameInfo.url ~= "") then
                         local coverImage = nil
                         if love.filesystem.getInfo(coverPath, "file") then
                             coverImage = loadOptionalImage(coverPath)
@@ -189,8 +253,22 @@ function gameLoader.loadGames(gamesPath)
                         gameInfo.exeVirtualPath = exeVirtualPath
                         gameInfo.icon = coverImage
 
+                        local screenshotImages = {}
+                        for _, screenshotFile in ipairs(gameInfo.screenshots or {}) do
+                            local screenshotPath = folderPath .. "/" .. screenshotFile
+                            local screenshotImage = loadOptionalImage(screenshotPath)
+                            if screenshotImage then
+                                table.insert(screenshotImages, screenshotImage)
+                            else
+                                print("Screenshot image not found for game: " .. gameInfo.title .. " (" .. screenshotPath .. ")")
+                            end
+                        end
+                        gameInfo.screenshotImages = #screenshotImages > 0 and screenshotImages or nil
+
                         table.insert(games, gameInfo)
                         print("Loaded game: " .. gameInfo.title)
+                    else
+                        print("No executable or page URL found for game, skipping: " .. gameInfo.title)
                     end
                 end
             end
