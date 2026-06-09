@@ -8,6 +8,24 @@ local function formatVersion(version)
     return "v" .. version
 end
 
+local function drawDemoBadge(launcher, x, y, opacity, uiScale)
+    local badgeWidth = 58 * uiScale
+    local badgeHeight = 22 * uiScale
+    local badgeX = x + launcher.tileSizeWidth - badgeWidth - 10 * uiScale
+    local badgeY = y + 10 * uiScale
+    local cornerRadius = 5 * uiScale
+
+    love.graphics.setColor(0.86, 0.22, 0.28, 0.95 * opacity)
+    love.graphics.rectangle("fill", badgeX, badgeY, badgeWidth, badgeHeight, cornerRadius, cornerRadius)
+
+    love.graphics.setColor(0, 0, 0, 0.35 * opacity)
+    love.graphics.rectangle("line", badgeX, badgeY, badgeWidth, badgeHeight, cornerRadius, cornerRadius)
+
+    love.graphics.setFont(launcher.smallFont)
+    love.graphics.setColor(1, 1, 1, opacity)
+    love.graphics.printf("DEMO", badgeX, badgeY + 4 * uiScale, badgeWidth, "center")
+end
+
 function tile.draw(launcher, x, y, game, isSelected, scale, opacity)
     local uiScale = launcher.uiScale or 1
 
@@ -62,6 +80,10 @@ function tile.draw(launcher, x, y, game, isSelected, scale, opacity)
         )
     end
 
+    if game.demo then
+        drawDemoBadge(launcher, x, y + yOffset, opacity, uiScale)
+    end
+
     local titleY = y + launcher.tileSizeHeight - 80 * uiScale + yOffset
     love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(0, 0, 0, opacity * 0.7)
@@ -98,7 +120,7 @@ function tile.draw(launcher, x, y, game, isSelected, scale, opacity)
     if game.source then
         local iconSize = 30 * uiScale
         local iconX = x + launcher.tileSizeWidth - iconSize - 10 * uiScale
-        local iconY = y + 10 * uiScale + yOffset
+        local iconY = y + (game.demo and 38 or 10) * uiScale + yOffset
 
         love.graphics.setColor(0.2, 0.2, 0.2, 0.8 * opacity)
         love.graphics.circle("fill", iconX + iconSize / 2, iconY + iconSize / 2, iconSize / 2)

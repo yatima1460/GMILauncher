@@ -36,12 +36,24 @@ local function isStringList(value)
     return true
 end
 
-local function isSafeAssetName(value)
-    return type(value) == "string"
-        and value ~= ""
-        and not value:find("[/\\]")
-        and not value:find("%.%.", 1, true)
-        and not value:find('[%c"<>|&^%%]')
+local function isSafeRelativePath(value)
+    if type(value) ~= "string"
+        or value == ""
+        or value:find("\\", 1, true)
+        or value:sub(1, 1) == "/"
+        or value:find("//", 1, true)
+        or value:find('[%c:"<>|&^%%]')
+    then
+        return false
+    end
+
+    for segment in value:gmatch("[^/]+") do
+        if segment == "." or segment == ".." then
+            return false
+        end
+    end
+
+    return not value:match("/$")
 end
 
 local function normalizeAssetList(value)
@@ -52,8 +64,8 @@ local function normalizeAssetList(value)
     local assets = {}
     for _, item in ipairs(value) do
         local asset = optionalString(item)
-        if not isSafeAssetName(asset) then
-            return nil, "unsafe asset name: " .. tostring(item)
+        if not isSafeRelativePath(asset) then
+            return nil, "unsafe asset path: " .. tostring(item)
         end
         table.insert(assets, asset)
     end
@@ -63,13 +75,6 @@ local function normalizeAssetList(value)
     end
 
     return assets, nil
-end
-
-local function isSafeExecutableName(value)
-    return type(value) == "string"
-        and value ~= ""
-        and not value:find("[/\\]")
-        and not value:find('[%c"<>|&^%%]')
 end
 
 local function loadMetadata(metadataPath)
@@ -114,14 +119,19 @@ local function normalizeMetadata(metadata, folder)
         return nil, "screenshots must be a list of file names"
     end
 
+    local cover = optionalString(metadata.cover)
+    if cover and not isSafeRelativePath(cover) then
+        return nil, "unsafe cover path: " .. tostring(cover)
+    end
+
     local exe
     if type(metadata.exe) == "string" and trim(metadata.exe) == "" then
         exe = ""
     else
         exe = optionalString(metadata.exe) or (folder .. ".exe")
     end
-    if exe ~= "" and not isSafeExecutableName(exe) then
-        return nil, "unsafe executable name: " .. tostring(exe)
+    if exe ~= "" and not isSafeRelativePath(exe) then
+        return nil, "unsafe executable path: " .. tostring(exe)
     end
 
     local screenshots, screenshotErr = normalizeAssetList(metadata.screenshots)
@@ -137,6 +147,8 @@ local function normalizeMetadata(metadata, folder)
         url = optionalString(metadata.url) or "",
         source = optionalString(metadata.source),
         year = year,
+        demo = metadata.demo == true,
+        cover = cover,
         description = optionalString(metadata.description),
         screenshots = screenshots
     }, nil
@@ -189,6 +201,8 @@ local function createLauncherCreditsTile()
         url = launcherUrl,
         source = launcherUrl,
         year = nil,
+        demo = false,
+        cover = nil,
         description = "GameMaker Italia Launcher\n\nCreated by yatima1460.\n\nGitHub: yatima1460/GMILauncher",
         icon = loadOptionalImage("assets/gmi_logo.png"),
         screenshots = nil
@@ -215,7 +229,6 @@ function gameLoader.loadGames(gamesPath)
         -- Check if it's actually a directory
         if love.filesystem.getInfo(folderPath, "directory") then
             local metadataPath = folderPath .. "/metadata.lua"
-            local coverPath = folderPath .. "/cover.png"
 
             local metadata
             if love.filesystem.getInfo(metadataPath) then
@@ -243,6 +256,7 @@ function gameLoader.loadGames(gamesPath)
 
                     if hasExecutable or (gameInfo.url and gameInfo.url ~= "") then
                         local coverImage = nil
+                        local coverPath = folderPath .. "/" .. (gameInfo.cover or "cover.png")
                         if love.filesystem.getInfo(coverPath, "file") then
                             coverImage = loadOptionalImage(coverPath)
                         else
