@@ -8,12 +8,13 @@ local function selectedGame(launcher)
     return launcher.games[launcher.selectedIndex]
 end
 
-local function showMessageBox(launcher, title, text)
+local function showMessageBox(launcher, title, text, images)
     launcher.showMessageBox = true
     launcher.messageBoxTitle = title
     launcher.messageBoxText = text
     launcher.messageBoxQr = nil
     launcher.messageBoxQrUrl = ""
+    launcher.messageBoxImages = images
 end
 
 local function showQrMessageBox(launcher, title, url)
@@ -29,6 +30,7 @@ local function showQrMessageBox(launcher, title, url)
     launcher.messageBoxText = "Scan to open author page"
     launcher.messageBoxQr = qr
     launcher.messageBoxQrUrl = url
+    launcher.messageBoxImages = nil
 end
 
 local function dismissMessageBox(launcher)
@@ -41,11 +43,23 @@ local function dismissMessageBox(launcher)
     launcher.messageBoxText = ""
     launcher.messageBoxQr = nil
     launcher.messageBoxQrUrl = ""
+    launcher.messageBoxImages = nil
     return true
 end
 
 local function launchSelectedGame(launcher)
-    gameLauncher.launch(selectedGame(launcher), launcher)
+    local game = selectedGame(launcher)
+    if not game then
+        return
+    end
+
+    if game.exe and game.exe ~= "" then
+        gameLauncher.launch(game, launcher)
+    elseif game.url and game.url ~= "" then
+        love.system.openURL(game.url)
+    else
+        showMessageBox(launcher, "Not Available", "No executable or page available for\n" .. game.title)
+    end
 end
 
 local function toggleFullscreen(launcher)
@@ -76,7 +90,7 @@ local function showSelectedDescription(launcher)
     end
 
     if game.description and game.description ~= "" then
-        showMessageBox(launcher, game.title, game.description)
+        showMessageBox(launcher, game.title, game.description, game.screenshotImages)
     else
         showMessageBox(launcher, "Not Available", "No description available for\n" .. game.title)
     end

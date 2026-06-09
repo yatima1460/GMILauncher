@@ -1,5 +1,19 @@
 local gameLauncher = {}
 
+local launchCompletionChannelName = "gmi-launch-completion"
+local runningLaunchThreads = {}
+
+local waitForGameThreadCode = [[
+local command, channelName, gameTitle = ...
+local ok, reason, code = os.execute(command)
+love.thread.getChannel(channelName):push({
+    gameTitle = gameTitle,
+    ok = ok,
+    reason = reason,
+    code = code
+})
+]]
+
 local function showLaunchError(launcher, gameTitle, details)
     if not launcher then
         return
@@ -73,6 +87,36 @@ local function didCommandStart(ok, reason, code)
     return ok == true and (reason == nil or reason == "exit") and (code == nil or code == 0)
 end
 
+local function minimizeLauncherWindow()
+    if love.window and love.window.minimize then
+        love.window.minimize()
+    end
+end
+
+local function restoreLauncherWindow()
+    if love.window and love.window.restore then
+        love.window.restore()
+    end
+
+    if love.window and love.window.requestAttention then
+        love.window.requestAttention()
+    end
+end
+
+local function startGameWaitThread(command, gameTitle)
+    local thread = love.thread.newThread(waitForGameThreadCode)
+    thread:start(command, launchCompletionChannelName, gameTitle)
+    table.insert(runningLaunchThreads, thread)
+end
+
+local function cleanupFinishedThreads()
+    for i = #runningLaunchThreads, 1, -1 do
+        if not runningLaunchThreads[i]:isRunning() then
+            table.remove(runningLaunchThreads, i)
+        end
+    end
+end
+
 function gameLauncher.launch(game, launcher)
     if not (game and game.exe and game.exe ~= "") then
         print("No valid executable for: " .. (game and game.title or "Unknown"))
@@ -107,25 +151,39 @@ function gameLauncher.launch(game, launcher)
     local osType = love.system.getOS()
     local cmd
     if osType == "Windows" then
-        cmd = "cmd /c start \"\" " .. quoteWindows(exePath)
+        cmd = "cmd /c start /wait \"\" " .. quoteWindows(exePath)
     else
-        cmd = "wine " .. quotePosix(exePath) .. " &"
+        cmd = "wine " .. quotePosix(exePath)
     end
 
     print("Exe Path: " .. exePath)
     print("Executing: " .. cmd)
 
-    local ok, reason, code = os.execute(cmd)
+    startGameWaitThread(cmd, game.title)
 
     -- Clear launching state
     launcher.isLaunching = false
     launcher.launchingGameTitle = ""
 
-    if didCommandStart(ok, reason, code) then
-        print("Game launched successfully: " .. game.title)
-    else
-        print("Failed to launch game: " .. game.title)
-        showLaunchError(launcher, game.title, "The launch command did not start successfully.")
+    print("Game launched successfully: " .. game.title)
+    minimizeLauncherWindow()
+end
+
+function gameLauncher.update()
+    cleanupFinishedThreads()
+
+    local channel = love.thread.getChannel(launchCompletionChannelName)
+    local launchResult = channel:pop()
+
+    while launchResult do
+        if didCommandStart(launchResult.ok, launchResult.reason, launchResult.code) then
+            print("Game closed: " .. launchResult.gameTitle)
+        else
+            print("Game exited with an error: " .. launchResult.gameTitle)
+        end
+
+        restoreLauncherWindow()
+        launchResult = channel:pop()
     end
 end
 
