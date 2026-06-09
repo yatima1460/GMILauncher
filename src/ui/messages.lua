@@ -29,6 +29,78 @@ local function drawQrCode(qr, x, y, maxSize)
     return qrSize
 end
 
+
+local function scaledImageSize(image, maxWidth, maxHeight)
+    local imageWidth = image:getWidth()
+    local imageHeight = image:getHeight()
+    local imageScale = math.min(maxWidth / imageWidth, maxHeight / imageHeight, 1)
+
+    return imageWidth * imageScale, imageHeight * imageScale, imageScale
+end
+
+local function screenshotLayout(images, boxWidth, uiScale)
+    if not images or #images == 0 then
+        return nil
+    end
+
+    local visibleCount = math.min(#images, 3)
+    local gap = 12 * uiScale
+    local areaWidth = boxWidth - 40 * uiScale
+    local thumbWidth = (areaWidth - gap * (visibleCount - 1)) / visibleCount
+    local thumbHeight = 110 * uiScale
+
+    return {
+        visibleCount = visibleCount,
+        gap = gap,
+        areaWidth = areaWidth,
+        thumbWidth = thumbWidth,
+        thumbHeight = thumbHeight,
+        height = thumbHeight + 26 * uiScale
+    }
+end
+
+local function drawScreenshots(images, layout, x, y, uiScale)
+    if not layout then
+        return
+    end
+
+    for index = 1, layout.visibleCount do
+        local image = images[index]
+        local thumbX = x + (index - 1) * (layout.thumbWidth + layout.gap)
+        local thumbY = y
+
+        love.graphics.setColor(0.08, 0.08, 0.1, 0.85)
+        love.graphics.rectangle("fill", thumbX, thumbY, layout.thumbWidth, layout.thumbHeight, 6 * uiScale, 6 * uiScale)
+
+        local drawWidth, drawHeight, imageScale = scaledImageSize(image, layout.thumbWidth, layout.thumbHeight)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(
+            image,
+            thumbX + (layout.thumbWidth - drawWidth) / 2,
+            thumbY + (layout.thumbHeight - drawHeight) / 2,
+            0,
+            imageScale,
+            imageScale
+        )
+
+        love.graphics.setColor(1, 1, 1, 0.22)
+        love.graphics.setLineWidth(1 * uiScale)
+        love.graphics.rectangle("line", thumbX, thumbY, layout.thumbWidth, layout.thumbHeight, 6 * uiScale, 6 * uiScale)
+    end
+
+    if #images > layout.visibleCount then
+        love.graphics.setFont(love.graphics.getFont())
+        love.graphics.setColor(1, 1, 1, 0.75)
+        love.graphics.printf(
+            "+" .. tostring(#images - layout.visibleCount),
+            x + layout.areaWidth - 42 * uiScale,
+            y + layout.thumbHeight - 24 * uiScale,
+            36 * uiScale,
+            "right"
+        )
+    end
+end
+
 function messages.drawMessageBox(launcher)
     local w, h = love.graphics.getDimensions()
     local uiScale = launcher.uiScale or 1
@@ -37,7 +109,10 @@ function messages.drawMessageBox(launcher)
     love.graphics.rectangle("fill", 0, 0, w, h)
 
     local hasQr = launcher.messageBoxQr ~= nil
-    local boxWidth = (hasQr and 560 or 500) * uiScale
+    local screenshotImages = launcher.messageBoxImages
+    local screenshotInfo = not hasQr and screenshotLayout(screenshotImages, 620 * uiScale, uiScale)
+    local hasScreenshots = screenshotInfo ~= nil
+    local boxWidth = (hasQr and 560 or hasScreenshots and 620 or 500) * uiScale
     local padding = 40 * uiScale
     local titlePadding = 20 * uiScale
 
@@ -56,8 +131,12 @@ function messages.drawMessageBox(launcher)
         urlHeight = #wrappedUrl * launcher.smallFont:getHeight()
     end
 
+    if hasScreenshots then
+        screenshotInfo = screenshotLayout(screenshotImages, boxWidth, uiScale)
+    end
+
     local contentHeight = hasQr and (titlePadding + titleHeight + 18 * uiScale + textHeight + 18 * uiScale + qrSize + 16 * uiScale + urlHeight + titlePadding)
-        or (titlePadding * 2 + titleHeight + padding + textHeight)
+        or (titlePadding * 2 + titleHeight + padding + textHeight + (hasScreenshots and screenshotInfo.height or 0))
     local boxHeight = math.max(contentHeight, 150 * uiScale)
     local boxX = (w - boxWidth) / 2
     local boxY = (h - boxHeight) / 2
@@ -74,6 +153,10 @@ function messages.drawMessageBox(launcher)
 
     local textY = boxY + titlePadding + titleHeight + 20 * uiScale
     love.graphics.printf(launcher.messageBoxText, boxX + 20 * uiScale, textY, boxWidth - 40 * uiScale, "center")
+
+    if hasScreenshots then
+        drawScreenshots(screenshotImages, screenshotInfo, boxX + 20 * uiScale, textY + textHeight + 18 * uiScale, uiScale)
+    end
 
     if hasQr then
         local qrX = boxX + (boxWidth - qrSize) / 2

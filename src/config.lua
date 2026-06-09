@@ -18,6 +18,7 @@ local config = {
     messageBoxText = "",
     messageBoxQr = nil,
     messageBoxQrUrl = "",
+    messageBoxImages = nil,
     theme = {
         background = { 0.2, 0.2, 0.25 },
         tileColor = { 0.3, 0.3, 0.35 },
