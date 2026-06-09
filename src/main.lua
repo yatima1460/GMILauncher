@@ -1,5 +1,6 @@
 local config = require("src.config")
 local gameLoader = require("src.game_loader")
+local gameLauncher = require("src.game_launcher")
 local draw = require("src.ui.draw")
 local input = require("src.input")
 local layout = require("src.ui.layout")
@@ -15,6 +16,8 @@ function love.load()
 end
 
 function love.update(dt)
+    gameLauncher.update(launcher)
+
     local diff = launcher.targetOffset - launcher.scrollOffset
 
     local interpolationSpeed = 15 * dt
