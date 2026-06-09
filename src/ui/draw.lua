@@ -9,7 +9,7 @@ local function helpTextForGame(game)
         and "S: Open source in browser"
         or "S: Source not available"
 
-    return "Arrows: Nav | D: Info | Q: QR (page) | F: Fullscreen | Enter: Launch | B: Open page in browser | "
+    return "Arrows: Nav | D: Info | Q: QR (page) | F: Fullscreen | Enter: Launch/Open page | B: Open page in browser | "
         .. sourceAction
         .. " | ESCape: Quit"
 end

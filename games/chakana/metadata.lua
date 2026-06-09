@@ -1,8 +1,8 @@
 return {
     title = "Chakana",
     author = "Tiz, Bloody",
-    url = "https://tiz010.itch.io/chakana",
-    exe = "chakrana_demo/chakana.exe",
+    url = "https://store.steampowered.com/app/4105240/Chakana/",
+    --exe = "chakrana_demo/chakana.exe",
     year = "2025",
     version = "Demo 2.3.0",
     demo = true,

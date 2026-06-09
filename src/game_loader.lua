@@ -124,12 +124,7 @@ local function normalizeMetadata(metadata, folder)
         return nil, "unsafe cover path: " .. tostring(cover)
     end
 
-    local exe
-    if type(metadata.exe) == "string" and trim(metadata.exe) == "" then
-        exe = ""
-    else
-        exe = optionalString(metadata.exe) or (folder .. ".exe")
-    end
+    local exe = optionalString(metadata.exe) or ""
     if exe ~= "" and not isSafeRelativePath(exe) then
         return nil, "unsafe executable path: " .. tostring(exe)
     end
@@ -252,6 +247,8 @@ function gameLoader.loadGames(gamesPath)
                     local hasExecutable = exeVirtualPath ~= "" and love.filesystem.getInfo(exeVirtualPath, "file") ~= nil
                     if exeVirtualPath ~= "" and not hasExecutable then
                         print("Executable not found for game, using page-only entry: " .. exeVirtualPath)
+                        gameInfo.exe = ""
+                        exeVirtualPath = ""
                     end
 
                     if hasExecutable or (gameInfo.url and gameInfo.url ~= "") then
