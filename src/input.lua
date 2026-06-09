@@ -15,6 +15,9 @@ local function showMessageBox(launcher, title, text, images)
     launcher.messageBoxQr = nil
     launcher.messageBoxQrUrl = ""
     launcher.messageBoxImages = images
+    launcher.messageBoxImageRects = nil
+    launcher.messageBoxHoveredImageIndex = nil
+    launcher.fullscreenImage = nil
 end
 
 local function showQrMessageBox(launcher, title, url)
@@ -31,6 +34,30 @@ local function showQrMessageBox(launcher, title, url)
     launcher.messageBoxQr = qr
     launcher.messageBoxQrUrl = url
     launcher.messageBoxImages = nil
+    launcher.messageBoxImageRects = nil
+    launcher.messageBoxHoveredImageIndex = nil
+    launcher.fullscreenImage = nil
+end
+
+local function dismissFullscreenImage(launcher)
+    if not launcher.fullscreenImage then
+        return false
+    end
+
+    launcher.fullscreenImage = nil
+    return true
+end
+
+local function clearMessageBoxState(launcher)
+    launcher.showMessageBox = false
+    launcher.messageBoxTitle = ""
+    launcher.messageBoxText = ""
+    launcher.messageBoxQr = nil
+    launcher.messageBoxQrUrl = ""
+    launcher.messageBoxImages = nil
+    launcher.messageBoxImageRects = nil
+    launcher.messageBoxHoveredImageIndex = nil
+    launcher.fullscreenImage = nil
 end
 
 local function dismissMessageBox(launcher)
@@ -38,13 +65,30 @@ local function dismissMessageBox(launcher)
         return false
     end
 
-    launcher.showMessageBox = false
-    launcher.messageBoxTitle = ""
-    launcher.messageBoxText = ""
-    launcher.messageBoxQr = nil
-    launcher.messageBoxQrUrl = ""
-    launcher.messageBoxImages = nil
+    clearMessageBoxState(launcher)
     return true
+end
+
+local function pointInRect(x, y, rect)
+    return x >= rect.x
+        and x <= rect.x + rect.width
+        and y >= rect.y
+        and y <= rect.y + rect.height
+end
+
+local function updateScreenshotHover(launcher, x, y)
+    launcher.messageBoxHoveredImageIndex = nil
+
+    if not launcher.showMessageBox or launcher.fullscreenImage then
+        return
+    end
+
+    for _, rect in ipairs(launcher.messageBoxImageRects or {}) do
+        if pointInRect(x, y, rect) then
+            launcher.messageBoxHoveredImageIndex = rect.index
+            return
+        end
+    end
 end
 
 local function launchSelectedGame(launcher)
@@ -69,7 +113,7 @@ local function toggleFullscreen(launcher)
     layout.update(launcher)
 end
 
-local function openOptionalUrl(launcher, field, fallbackText)
+local function openOptionalUrl(launcher, field, fallbackTitle, fallbackText)
     local game = selectedGame(launcher)
     if not game then
         return
@@ -79,7 +123,7 @@ local function openOptionalUrl(launcher, field, fallbackText)
     if url and url ~= "" then
         love.system.openURL(url)
     else
-        showMessageBox(launcher, "Not Available", fallbackText .. "\n" .. game.title)
+        showMessageBox(launcher, fallbackTitle, fallbackText .. "\n" .. game.title)
     end
 end
 
@@ -140,6 +184,10 @@ local function moveSelection(launcher, direction)
 end
 
 function input.handleKeypress(launcher, key)
+    if dismissFullscreenImage(launcher) then
+        return
+    end
+
     -- If message box is showing, dismiss it on any key press
     if dismissMessageBox(launcher) then
         return
@@ -151,10 +199,10 @@ function input.handleKeypress(launcher, key)
         ["return"] = function() launchSelectedGame(launcher) end,
         space = function() launchSelectedGame(launcher) end,
         s = function()
-            openOptionalUrl(launcher, "source", "No source code available for")
+            openOptionalUrl(launcher, "source", "Source Not Available", "No source code available for")
         end,
         b = function()
-            openOptionalUrl(launcher, "url", "No author page available for")
+            openOptionalUrl(launcher, "url", "Author Page Not Available", "No author page available for")
         end,
         q = function() showSelectedUrlQr(launcher) end,
         d = function() showSelectedDescription(launcher) end,
@@ -167,7 +215,32 @@ function input.handleKeypress(launcher, key)
     end
 end
 
+function input.handleMouseMoved(launcher, x, y)
+    updateScreenshotHover(launcher, x, y)
+end
+
+function input.handleMousePressed(launcher, x, y, button)
+    if button ~= 1 then
+        return
+    end
+
+    if dismissFullscreenImage(launcher) then
+        return
+    end
+
+    updateScreenshotHover(launcher, x, y)
+
+    local imageIndex = launcher.messageBoxHoveredImageIndex
+    if imageIndex and launcher.messageBoxImages then
+        launcher.fullscreenImage = launcher.messageBoxImages[imageIndex]
+    end
+end
+
 function input.handleGamepadPress(launcher, _joystick, button)
+    if dismissFullscreenImage(launcher) then
+        return
+    end
+
     -- If message box is showing, dismiss it on any button press
     if dismissMessageBox(launcher) then
         return
@@ -176,7 +249,7 @@ function input.handleGamepadPress(launcher, _joystick, button)
     local buttonActions = {
         a = function() launchSelectedGame(launcher) end,
         b = function()
-            openOptionalUrl(launcher, "url", "No author page available for")
+            openOptionalUrl(launcher, "url", "Author Page Not Available", "No author page available for")
         end,
         y = love.event.quit,
         dpright = function() moveSelection(launcher, 1) end,

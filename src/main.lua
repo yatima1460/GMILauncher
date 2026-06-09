@@ -42,6 +42,14 @@ function love.keypressed(key)
     input.handleKeypress(launcher, key)
 end
 
+function love.mousemoved(x, y)
+    input.handleMouseMoved(launcher, x, y)
+end
+
+function love.mousepressed(x, y, button)
+    input.handleMousePressed(launcher, x, y, button)
+end
+
 function love.gamepadpressed(joystick, button)
     input.handleGamepadPress(launcher, joystick, button)
 end

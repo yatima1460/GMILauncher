@@ -43,7 +43,7 @@ local function screenshotLayout(images, boxWidth, uiScale)
         return nil
     end
 
-    local visibleCount = math.min(#images, 3)
+    local visibleCount = math.min(#images, 5)
     local gap = 12 * uiScale
     local areaWidth = boxWidth - 40 * uiScale
     local thumbWidth = (areaWidth - gap * (visibleCount - 1)) / visibleCount
@@ -59,17 +59,33 @@ local function screenshotLayout(images, boxWidth, uiScale)
     }
 end
 
-local function drawScreenshots(images, layout, x, y, uiScale)
+local function drawScreenshots(launcher, images, layout, x, y, uiScale)
     if not layout then
+        launcher.messageBoxImageRects = nil
         return
     end
+
+    launcher.messageBoxImageRects = {}
 
     for index = 1, layout.visibleCount do
         local image = images[index]
         local thumbX = x + (index - 1) * (layout.thumbWidth + layout.gap)
         local thumbY = y
+        local isHovered = launcher.messageBoxHoveredImageIndex == index
 
-        love.graphics.setColor(0.08, 0.08, 0.1, 0.85)
+        table.insert(launcher.messageBoxImageRects, {
+            index = index,
+            x = thumbX,
+            y = thumbY,
+            width = layout.thumbWidth,
+            height = layout.thumbHeight
+        })
+
+        if isHovered then
+            love.graphics.setColor(launcher.theme.selectedColor[1], launcher.theme.selectedColor[2], launcher.theme.selectedColor[3], 0.35)
+        else
+            love.graphics.setColor(0.08, 0.08, 0.1, 0.85)
+        end
         love.graphics.rectangle("fill", thumbX, thumbY, layout.thumbWidth, layout.thumbHeight, 6 * uiScale, 6 * uiScale)
 
         local drawWidth, drawHeight, imageScale = scaledImageSize(image, layout.thumbWidth, layout.thumbHeight)
@@ -83,8 +99,13 @@ local function drawScreenshots(images, layout, x, y, uiScale)
             imageScale
         )
 
-        love.graphics.setColor(1, 1, 1, 0.22)
-        love.graphics.setLineWidth(1 * uiScale)
+        if isHovered then
+            love.graphics.setColor(launcher.theme.selectedColor[1], launcher.theme.selectedColor[2], launcher.theme.selectedColor[3], 0.95)
+            love.graphics.setLineWidth(3 * uiScale)
+        else
+            love.graphics.setColor(1, 1, 1, 0.22)
+            love.graphics.setLineWidth(1 * uiScale)
+        end
         love.graphics.rectangle("line", thumbX, thumbY, layout.thumbWidth, layout.thumbHeight, 6 * uiScale, 6 * uiScale)
     end
 
@@ -99,6 +120,32 @@ local function drawScreenshots(images, layout, x, y, uiScale)
             "right"
         )
     end
+end
+
+local function drawFullscreenImage(image)
+    if not image then
+        return
+    end
+
+    local w, h = love.graphics.getDimensions()
+    local padding = 48
+    local imageWidth = image:getWidth()
+    local imageHeight = image:getHeight()
+    local imageScale = math.min((w - padding * 2) / imageWidth, (h - padding * 2) / imageHeight, 1)
+    local drawWidth = imageWidth * imageScale
+    local drawHeight = imageHeight * imageScale
+    local drawX = (w - drawWidth) / 2
+    local drawY = (h - drawHeight) / 2
+
+    love.graphics.setColor(0, 0, 0, 0.88)
+    love.graphics.rectangle("fill", 0, 0, w, h)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(image, drawX, drawY, 0, imageScale, imageScale)
+
+    love.graphics.setColor(1, 1, 1, 0.22)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", drawX, drawY, drawWidth, drawHeight)
 end
 
 function messages.drawMessageBox(launcher)
@@ -155,7 +202,10 @@ function messages.drawMessageBox(launcher)
     love.graphics.printf(launcher.messageBoxText, boxX + 20 * uiScale, textY, boxWidth - 40 * uiScale, "center")
 
     if hasScreenshots then
-        drawScreenshots(screenshotImages, screenshotInfo, boxX + 20 * uiScale, textY + textHeight + 18 * uiScale, uiScale)
+        drawScreenshots(launcher, screenshotImages, screenshotInfo, boxX + 20 * uiScale, textY + textHeight + 18 * uiScale, uiScale)
+    else
+        launcher.messageBoxImageRects = nil
+        launcher.messageBoxHoveredImageIndex = nil
     end
 
     if hasQr then
@@ -175,6 +225,8 @@ function messages.drawMessageBox(launcher)
             )
         end
     end
+
+    drawFullscreenImage(launcher.fullscreenImage)
 end
 
 function messages.drawLaunchingScreen(launcher)

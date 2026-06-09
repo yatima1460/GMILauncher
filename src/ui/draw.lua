@@ -4,6 +4,16 @@ local tile = require("src.ui.tile")
 
 local draw = {}
 
+local function helpTextForGame(game)
+    local sourceAction = game and game.source and game.source ~= ""
+        and "S: Open source in browser"
+        or "S: Source not available"
+
+    return "Arrows: Nav | D: Info | Q: QR (page) | F: Fullscreen | Enter: Launch | B: Open page in browser | "
+        .. sourceAction
+        .. " | ESCape: Quit"
+end
+
 function draw.drawLauncher(launcher)
     if launcher.isLaunching then
         messages.drawLaunchingScreen(launcher)
@@ -60,7 +70,7 @@ function draw.drawLauncher(launcher)
 
     love.graphics.setFont(launcher.gameFont)
     love.graphics.setColor(launcher.theme.accentColor)
-    love.graphics.print(launcher.helpText, 40 * uiScale, h - 40 * uiScale)
+    love.graphics.print(helpTextForGame(selectedGame), 40 * uiScale, h - 40 * uiScale)
 
     if shouldDrawMessageBox then
         messages.drawMessageBox(launcher)
